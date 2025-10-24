@@ -1,0 +1,18 @@
+{
+  "Salesforce": {
+    "LoginUrl": "https://login.salesforce.com",
+    "ClientId": "YOUR_CONNECTED_APP_CLIENT_ID",
+    "Username": "YOUR_SALESFORCE_USERNAME",
+    "PrivateKeyPath": "Config/Certificate.pem",
+    "TokenEndpoint": "/services/oauth2/token"
+  },
+  "Token": {
+    "ExpiryBuffer": 300,
+    "MaxRetries": 3,
+    "RetryDelay": 5000
+  },
+  "Logging": {
+    "Level": "Info",
+    "EnableDetailedLogging": true
+  }
+}

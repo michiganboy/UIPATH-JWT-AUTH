@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Activity x:Class="SalesforceJWT.ProductionExample" xmlns="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+  <Sequence DisplayName="Production-Ready JWT Example">
+    <!-- Variables -->
+    <Variable x:TypeArguments="x:String" Name="AccessToken" />
+    <Variable x:TypeArguments="x:String" Name="InstanceUrl" />
+    <Variable x:TypeArguments="x:DateTime" Name="TokenExpiry" />
+    <Variable x:TypeArguments="x:Boolean" Name="IsRefreshed" />
+    <Variable x:TypeArguments="x:String" Name="NewToken" />
+    <Variable x:TypeArguments="x:DateTime" Name="NewExpiry" />
+    <Variable x:TypeArguments="x:String" Name="APIResponse" />
+    <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
+    <Variable x:TypeArguments="x:Int32" Name="RetryCount" />
+    <Variable x:TypeArguments="x:Int32" Name="MaxRetries" />
+    <Variable x:TypeArguments="x:Boolean" Name="Success" />
+    
+    <!-- Initialize Variables -->
+    <Assign DisplayName="Initialize Variables">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[RetryCount]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Set Max Retries">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[MaxRetries]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[3]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Set Success Flag">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[Success]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Step 1: Production JWT Authentication with Retry Logic -->
+    <LogMessage DisplayName="Starting Production JWT Authentication" Level="Info" Message="Starting production-ready JWT authentication with retry logic..." />
+    
+    <RetryScope DisplayName="JWT Authentication Retry Logic">
+      <MaxRetryNumber>3</MaxRetryNumber>
+      <RetryInterval>00:00:10</RetryInterval>
+      <Try>
+        <InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
+          <Arguments>
+            <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
+            <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
+            <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
+          </Arguments>
+        </InvokeWorkflowFile>
+        
+        <LogMessage DisplayName="JWT Authentication Successful" Level="Info" Message="[&quot;JWT authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
+      </Try>
+      <Catch>
+        <LogMessage DisplayName="JWT Authentication Failed" Level="Error" Message="[&quot;JWT authentication failed: &quot; + Exception.Message]" />
+        <LogMessage DisplayName="Retry Attempt" Level="Info" Message="[&quot;Retry attempt: &quot; + RetryCount.ToString()]" />
+      </Catch>
+    </RetryScope>
+    
+    <!-- Step 2: Token Refresh Check -->
+    <LogMessage DisplayName="Checking Token Refresh" Level="Info" Message="Checking if token needs refresh..." />
+    
+    <InvokeWorkflowFile DisplayName="Check Token Refresh" WorkflowFileName="Activities\RefreshToken.xaml">
+      <Arguments>
+        <Argument x:TypeArguments="x:String" Name="CurrentToken" Value="[AccessToken]" />
+        <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
+        <Argument x:TypeArguments="x:Boolean" Name="IsRefreshed" Value="[IsRefreshed]" />
+        <Argument x:TypeArguments="x:String" Name="NewToken" Value="[NewToken]" />
+        <Argument x:TypeArguments="x:DateTime" Name="NewExpiry" Value="[NewExpiry]" />
+      </Arguments>
+    </InvokeWorkflowFile>
+    
+    <!-- Use refreshed token if needed -->
+    <If DisplayName="Use Refreshed Token">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[IsRefreshed]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <Assign DisplayName="Update Token">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[AccessToken]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[NewToken]</InArgument>
+          </Assign.Value>
+        </Assign>
+        
+        <Assign DisplayName="Update Expiry">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:DateTime">[TokenExpiry]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:DateTime">[NewExpiry]</InArgument>
+          </Assign.Value>
+        </Assign>
+        
+        <LogMessage DisplayName="Token Refreshed" Level="Info" Message="[&quot;Token refreshed successfully. New expiry: &quot; + TokenExpiry.ToString()]" />
+      </If.Then>
+      <If.Else>
+        <LogMessage DisplayName="Token Still Valid" Level="Info" Message="Token is still valid, no refresh needed." />
+      </If.Else>
+    </If>
+    
+    <!-- Step 3: Production API Call with Comprehensive Error Handling -->
+    <LogMessage DisplayName="Making Production API Call" Level="Info" Message="Making production API call with comprehensive error handling..." />
+    
+    <While DisplayName="API Call Retry Loop">
+      <While.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[RetryCount &lt; MaxRetries And Not Success]</InArgument>
+      </While.Condition>
+      <While.Body>
+        <TryCatch DisplayName="API Call with Error Handling">
+          <Try>
+            <HttpRequest DisplayName="Get Account Describe" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
+              <HttpRequest.Headers>
+                <Dictionary x:TypeArguments="x:String, x:String">
+                  <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
+                  <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
+                </Dictionary>
+              </HttpRequest.Headers>
+              <HttpRequest.Result>
+                <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
+              </HttpRequest.Result>
+              <HttpRequest.StatusCode>
+                <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+              </HttpRequest.StatusCode>
+            </HttpRequest>
+            
+            <!-- Check if successful -->
+            <If DisplayName="Check API Success">
+              <If.Condition>
+                <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+              </If.Condition>
+              <If.Then>
+                <LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully!" />
+                <LogMessage DisplayName="Response Length" Level="Info" Message="[&quot;Response length: &quot; + APIResponse.Length.ToString() + &quot; characters&quot;]" />
+                
+                <!-- Set success flag -->
+                <Assign DisplayName="Set Success Flag">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Boolean">[Success]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Then>
+              <If.Else>
+                <LogMessage DisplayName="API Call Failed" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
+                <LogMessage DisplayName="Error Response" Level="Error" Message="[&quot;Error response: &quot; + APIResponse]" />
+                
+                <!-- Handle specific error codes -->
+                <If DisplayName="Handle Specific Error Codes">
+                  <If.Condition>
+                    <InArgument x:TypeArguments="x:Boolean">[StatusCode = 401]</InArgument>
+                  </If.Condition>
+                  <If.Then>
+                    <LogMessage DisplayName="Unauthorized Error" Level="Error" Message="401 Unauthorized - Token may be expired or invalid" />
+                    <LogMessage DisplayName="Attempting Token Refresh" Level="Info" Message="Attempting to refresh token..." />
+                    
+                    <!-- Try to refresh token -->
+                    <InvokeWorkflowFile DisplayName="Refresh Token" WorkflowFileName="Activities\RefreshToken.xaml">
+                      <Arguments>
+                        <Argument x:TypeArguments="x:String" Name="CurrentToken" Value="[AccessToken]" />
+                        <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
+                        <Argument x:TypeArguments="x:Boolean" Name="IsRefreshed" Value="[IsRefreshed]" />
+                        <Argument x:TypeArguments="x:String" Name="NewToken" Value="[NewToken]" />
+                        <Argument x:TypeArguments="x:DateTime" Name="NewExpiry" Value="[NewExpiry]" />
+                      </Arguments>
+                    </InvokeWorkflowFile>
+                    
+                    <!-- Use refreshed token if available -->
+                    <If DisplayName="Use Refreshed Token on 401">
+                      <If.Condition>
+                        <InArgument x:TypeArguments="x:Boolean">[IsRefreshed]</InArgument>
+                      </If.Condition>
+                      <If.Then>
+                        <Assign DisplayName="Update Token on 401">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[AccessToken]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">[NewToken]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        
+                        <Assign DisplayName="Update Expiry on 401">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:DateTime">[TokenExpiry]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:DateTime">[NewExpiry]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        
+                        <LogMessage DisplayName="Token Refreshed on 401" Level="Info" Message="Token refreshed successfully after 401 error." />
+                      </If.Then>
+                    </If>
+                  </If.Then>
+                  <If.Else>
+                    <If DisplayName="Handle Other Error Codes">
+                      <If.Condition>
+                        <InArgument x:TypeArguments="x:Boolean">[StatusCode = 403]</InArgument>
+                      </If.Condition>
+                      <If.Then>
+                        <LogMessage DisplayName="Forbidden Error" Level="Error" Message="403 Forbidden - Insufficient permissions" />
+                      </If.Then>
+                      <If.Else>
+                        <LogMessage DisplayName="Other Error" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
+                      </If.Else>
+                    </If>
+                  </If.Else>
+                </If>
+                
+                <!-- Increment retry count -->
+                <Assign DisplayName="Increment Retry Count">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Int32">[RetryCount]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Int32">[RetryCount + 1]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                
+                <!-- Wait before retry -->
+                <Delay DisplayName="Wait Before Retry" Duration="00:00:05" />
+              </If.Else>
+            </If>
+          </Try>
+          <Catch>
+            <LogMessage DisplayName="API Call Exception" Level="Error" Message="[&quot;API call failed with exception: &quot; + Exception.Message]" />
+            
+            <!-- Increment retry count -->
+            <Assign DisplayName="Increment Retry Count on Exception">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Int32">[RetryCount]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Int32">[RetryCount + 1]</InArgument>
+              </Assign.Value>
+            </Assign>
+            
+            <!-- Wait before retry -->
+            <Delay DisplayName="Wait Before Retry on Exception" Duration="00:00:05" />
+          </Catch>
+        </TryCatch>
+      </While.Body>
+    </While>
+    
+    <!-- Step 4: Check Final Result -->
+    <If DisplayName="Check Final Result">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[Success]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <LogMessage DisplayName="Production Example Complete" Level="Info" Message="Production JWT example completed successfully!" />
+        <LogMessage DisplayName="Summary" Level="Info" Message="=== PRODUCTION SUMMARY ===" />
+        <LogMessage DisplayName="Authentication" Level="Info" Message="✓ JWT Authentication with retry logic" />
+        <LogMessage DisplayName="Token Refresh" Level="Info" Message="✓ Automatic token refresh" />
+        <LogMessage DisplayName="Error Handling" Level="Info" Message="✓ Comprehensive error handling" />
+        <LogMessage DisplayName="Retry Logic" Level="Info" Message="✓ Retry logic for failed calls" />
+        <LogMessage DisplayName="Specific Errors" Level="Info" Message="✓ Specific error code handling" />
+        <LogMessage DisplayName="Production Ready" Level="Info" Message="✓ Production-ready implementation" />
+      </If.Then>
+      <If.Else>
+        <LogMessage DisplayName="Production Example Failed" Level="Error" Message="[&quot;Production JWT example failed after &quot; + MaxRetries.ToString() + &quot; retries&quot;]" />
+        <Throw DisplayName="Throw Production Error">
+          <Throw.Exception>
+            <InArgument x:TypeArguments="x:Exception">[New Exception("Production JWT example failed after " + MaxRetries.ToString() + " retries")]</InArgument>
+          </Throw.Exception>
+        </Throw>
+      </If.Else>
+    </If>
+  </Sequence>
+</Activity>

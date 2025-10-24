@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Activity x:Class="SalesforceJWT.ValidateToken" xmlns="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+  <Sequence DisplayName="Validate Token">
+    <!-- Variables -->
+    <Variable x:TypeArguments="x:String" Name="TestEndpoint" />
+    <Variable x:TypeArguments="x:String" Name="ResponseBody" />
+    <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
+    <Variable x:TypeArguments="x:String" Name="ErrorMessage" />
+    
+    <!-- Set Test Endpoint -->
+    <Assign DisplayName="Set Test Endpoint">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[TestEndpoint]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[InstanceUrl + "/services/data/v58.0/sobjects/User/describe"]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Test Token with API Call -->
+    <TryCatch DisplayName="Test Token with API Call">
+      <Try>
+        <HttpRequest DisplayName="Test API Call" Method="GET" Url="[TestEndpoint]">
+          <HttpRequest.Headers>
+            <Dictionary x:TypeArguments="x:String, x:String">
+              <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
+              <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
+            </Dictionary>
+          </HttpRequest.Headers>
+          <HttpRequest.Result>
+            <OutArgument x:TypeArguments="x:String">[ResponseBody]</OutArgument>
+          </HttpRequest.Result>
+          <HttpRequest.StatusCode>
+            <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+          </HttpRequest.StatusCode>
+        </HttpRequest>
+        
+        <!-- Check Response Status -->
+        <If DisplayName="Check API Response">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+          </If.Condition>
+          <If.Then>
+            <Assign DisplayName="Set Token Valid">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Boolean">[IsValid]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+              </Assign.Value>
+            </Assign>
+            
+            <Assign DisplayName="Clear Error Message">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">[String.Empty]</InArgument>
+              </Assign.Value>
+            </Assign>
+            
+            <LogMessage DisplayName="Token Validation Successful" Level="Info" Message="Token is valid and working correctly." />
+          </If.Then>
+          <If.Else>
+            <Assign DisplayName="Set Token Invalid">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Boolean">[IsValid]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+              </Assign.Value>
+            </Assign>
+            
+            <Assign DisplayName="Set Error Message">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">["API call failed with status code: " + StatusCode.ToString() + ". Response: " + ResponseBody]</InArgument>
+              </Assign.Value>
+            </Assign>
+            
+            <LogMessage DisplayName="Token Validation Failed" Level="Error" Message="[&quot;Token validation failed. Status: &quot; + StatusCode.ToString() + &quot;, Response: &quot; + ResponseBody]" />
+          </If.Else>
+        </If>
+      </Try>
+      <Catch>
+        <Assign DisplayName="Set Token Invalid on Exception">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:Boolean">[IsValid]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+          </Assign.Value>
+        </Assign>
+        
+        <Assign DisplayName="Set Exception Error Message">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["Token validation failed with exception: " + Exception.Message]</InArgument>
+          </Assign.Value>
+        </Assign>
+        
+        <LogMessage DisplayName="Token Validation Exception" Level="Error" Message="[&quot;Token validation failed with exception: &quot; + Exception.Message]" />
+      </Catch>
+    </TryCatch>
+  </Sequence>
+</Activity>

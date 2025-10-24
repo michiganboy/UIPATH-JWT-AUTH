@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Activity x:Class="SalesforceJWT.RefreshToken" xmlns="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+  <Sequence DisplayName="Refresh Token">
+    <!-- Variables -->
+    <Variable x:TypeArguments="x:Boolean" Name="TokenNeedsRefresh" />
+    <Variable x:TypeArguments="x:TimeSpan" Name="TimeUntilExpiry" />
+    
+    <!-- Check if token needs refresh -->
+    <Assign DisplayName="Calculate Time Until Expiry">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:TimeSpan">[TimeUntilExpiry]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:TimeSpan">[TokenExpiry - DateTime.Now]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Check if token expires within buffer time (5 minutes) -->
+    <Assign DisplayName="Check if Token Needs Refresh">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[TokenNeedsRefresh]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[TimeUntilExpiry.TotalSeconds &lt; 300]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Refresh token if needed -->
+    <If DisplayName="Refresh Token if Needed">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[TokenNeedsRefresh]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <LogMessage DisplayName="Token Needs Refresh" Level="Info" Message="[&quot;Token expires in &quot; + TimeUntilExpiry.TotalMinutes.ToString("F1") + &quot; minutes. Refreshing...&quot;]" />
+        
+        <!-- Get new token -->
+        <InvokeWorkflowFile DisplayName="Get New Token" WorkflowFileName="GetSalesforceToken.xaml">
+          <Arguments>
+            <Argument x:TypeArguments="x:String" Name="ClientId" Value="[ClientId]" />
+            <Argument x:TypeArguments="x:String" Name="Username" Value="[Username]" />
+            <Argument x:TypeArguments="x:String" Name="LoginUrl" Value="[LoginUrl]" />
+            <Argument x:TypeArguments="x:String" Name="PrivateKeyPath" Value="[PrivateKeyPath]" />
+            <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[NewToken]" />
+            <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[NewInstanceUrl]" />
+            <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[NewExpiry]" />
+          </Arguments>
+        </InvokeWorkflowFile>
+        
+        <!-- Set refresh results -->
+        <Assign DisplayName="Set Refresh Results">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:Boolean">[IsRefreshed]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+          </Assign.Value>
+        </Assign>
+        
+        <LogMessage DisplayName="Token Refreshed Successfully" Level="Info" Message="[&quot;Token refreshed successfully. New expiry: &quot; + NewExpiry.ToString()]" />
+      </If.Then>
+      <If.Else>
+        <LogMessage DisplayName="Token Still Valid" Level="Info" Message="[&quot;Token is still valid for &quot; + TimeUntilExpiry.TotalMinutes.ToString("F1") + &quot; minutes. No refresh needed.&quot;]" />
+        
+        <!-- Set no refresh needed -->
+        <Assign DisplayName="Set No Refresh Needed">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:Boolean">[IsRefreshed]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+          </Assign.Value>
+        </Assign>
+      </If.Else>
+    </If>
+  </Sequence>
+</Activity>

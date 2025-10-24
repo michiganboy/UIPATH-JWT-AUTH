@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Activity x:Class="SalesforceJWT.MigrationExample" xmlns="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+  <Sequence DisplayName="Migration Example: SOAP to JWT">
+    <!-- Variables -->
+    <Variable x:TypeArguments="x:String" Name="AccessToken" />
+    <Variable x:TypeArguments="x:String" Name="InstanceUrl" />
+    <Variable x:TypeArguments="x:DateTime" Name="TokenExpiry" />
+    <Variable x:TypeArguments="x:String" Name="APIResponse" />
+    <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
+    
+    <!-- Step 1: JWT Authentication (Replaces SOAP) -->
+    <LogMessage DisplayName="JWT Authentication" Level="Info" Message="Using JWT authentication instead of SOAP..." />
+    
+    <InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
+      <Arguments>
+        <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
+        <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
+        <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
+      </Arguments>
+    </InvokeWorkflowFile>
+    
+    <LogMessage DisplayName="JWT Authentication Complete" Level="Info" Message="[&quot;JWT authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
+    
+    <!-- Step 2: Make API Call (Same as before, but with JWT headers) -->
+    <LogMessage DisplayName="Making API Call" Level="Info" Message="Making API call with JWT authentication..." />
+    
+    <!-- BEFORE: SOAP Headers -->
+    <!--
+    <HttpRequest>
+      <Headers>
+        <Header Name="SOAPAction" Value="login" />
+        <Header Name="Content-Type" Value="text/xml; charset=utf-8" />
+      </Headers>
+    </HttpRequest>
+    -->
+    
+    <!-- AFTER: JWT Headers -->
+    <HttpRequest DisplayName="Get Account Describe with JWT" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
+      <HttpRequest.Headers>
+        <Dictionary x:TypeArguments="x:String, x:String">
+          <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
+          <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
+        </Dictionary>
+      </HttpRequest.Headers>
+      <HttpRequest.Result>
+        <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
+      </HttpRequest.Result>
+      <HttpRequest.StatusCode>
+        <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+      </HttpRequest.StatusCode>
+    </HttpRequest>
+    
+    <!-- Step 3: Handle Response -->
+    <If DisplayName="Check API Response">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully with JWT authentication!" />
+        <LogMessage DisplayName="Response Length" Level="Info" Message="[&quot;Response length: &quot; + APIResponse.Length.ToString() + &quot; characters&quot;]" />
+      </If.Then>
+      <If.Else>
+        <LogMessage DisplayName="API Call Failed" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
+        <LogMessage DisplayName="Error Response" Level="Error" Message="[&quot;Error response: &quot; + APIResponse]" />
+      </If.Else>
+    </If>
+    
+    <!-- Step 4: Additional API Calls (Same pattern) -->
+    <LogMessage DisplayName="Making Additional API Call" Level="Info" Message="Making additional API call to demonstrate pattern..." />
+    
+    <HttpRequest DisplayName="Get User Info with JWT" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/User/describe']">
+      <HttpRequest.Headers>
+        <Dictionary x:TypeArguments="x:String, x:String">
+          <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
+          <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
+        </Dictionary>
+      </HttpRequest.Headers>
+      <HttpRequest.Result>
+        <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
+      </HttpRequest.Result>
+      <HttpRequest.StatusCode>
+        <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+      </HttpRequest.StatusCode>
+    </HttpRequest>
+    
+    <If DisplayName="Check Additional API Response">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <LogMessage DisplayName="Additional API Call Successful" Level="Info" Message="Additional API call completed successfully!" />
+      </If.Then>
+      <If.Else>
+        <LogMessage DisplayName="Additional API Call Failed" Level="Error" Message="[&quot;Additional API call failed with status code: &quot; + StatusCode.ToString()]" />
+      </If.Else>
+    </If>
+    
+    <!-- Step 5: Complete Migration Example -->
+    <LogMessage DisplayName="Migration Example Complete" Level="Info" Message="Migration example completed successfully! JWT authentication is working." />
+    
+    <!-- Step 6: Summary -->
+    <LogMessage DisplayName="Migration Summary" Level="Info" Message="=== MIGRATION SUMMARY ===" />
+    <LogMessage DisplayName="Before" Level="Info" Message="BEFORE: Used SOAP authentication with username/password" />
+    <LogMessage DisplayName="After" Level="Info" Message="AFTER: Using JWT authentication with private key" />
+    <LogMessage DisplayName="Benefits" Level="Info" Message="BENEFITS: More secure, hands-off, automatic token refresh" />
+    <LogMessage DisplayName="Changes Required" Level="Info" Message="CHANGES: Replace SOAP headers with JWT Bearer token headers" />
+  </Sequence>
+</Activity>

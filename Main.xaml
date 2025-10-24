@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Activity x:Class="SalesforceJWT.Main" xmlns="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+  <Sequence DisplayName="Salesforce JWT Authentication">
+    <!-- Initialize Variables -->
+    <Assign DisplayName="Initialize Configuration">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[ClientId]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[Config.ClientId]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Set Username">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[Username]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[Config.Username]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Set Login URL">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[LoginUrl]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[Config.LoginUrl]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Set Private Key Path">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[PrivateKeyPath]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[Config.PrivateKeyPath]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Get Salesforce Token -->
+    <InvokeWorkflowFile DisplayName="Get Salesforce Token" WorkflowFileName="Activities\GetSalesforceToken.xaml">
+      <Arguments>
+        <Argument x:TypeArguments="x:String" Name="ClientId" Value="[ClientId]" />
+        <Argument x:TypeArguments="x:String" Name="Username" Value="[Username]" />
+        <Argument x:TypeArguments="x:String" Name="LoginUrl" Value="[LoginUrl]" />
+        <Argument x:TypeArguments="x:String" Name="PrivateKeyPath" Value="[PrivateKeyPath]" />
+        <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
+        <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
+        <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
+      </Arguments>
+    </InvokeWorkflowFile>
+    
+    <!-- Validate Token -->
+    <InvokeWorkflowFile DisplayName="Validate Token" WorkflowFileName="Activities\ValidateToken.xaml">
+      <Arguments>
+        <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
+        <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
+        <Argument x:TypeArguments="x:Boolean" Name="IsValid" Value="[IsValid]" />
+        <Argument x:TypeArguments="x:String" Name="ErrorMessage" Value="[ErrorMessage]" />
+      </Arguments>
+    </InvokeWorkflowFile>
+    
+    <!-- Log Results -->
+    <If DisplayName="Check Authentication Result">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[IsValid]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <LogMessage DisplayName="Authentication Successful" Level="Info" Message="[&quot;Salesforce JWT Authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
+      </If.Then>
+      <If.Else>
+        <LogMessage DisplayName="Authentication Failed" Level="Error" Message="[&quot;Salesforce JWT Authentication failed: &quot; + ErrorMessage]" />
+        <Throw DisplayName="Throw Authentication Error">
+          <Throw.Exception>
+            <InArgument x:TypeArguments="x:Exception">[New Exception(ErrorMessage)]</InArgument>
+          </Throw.Exception>
+        </Throw>
+      </If.Else>
+    </If>
+    
+    <!-- Return Results -->
+    <Return DisplayName="Return Authentication Results">
+      <Return.Value>
+        <OutArgument x:TypeArguments="x:String">[AccessToken]</OutArgument>
+      </Return.Value>
+    </Return>
+  </Sequence>
+</Activity>
