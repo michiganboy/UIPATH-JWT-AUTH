@@ -11,23 +11,23 @@
     <Variable x:TypeArguments="x:Boolean" Name="IsValid" />
     
     <!-- Step 1: JWT Authentication with Error Handling -->
-    <LogMessage DisplayName="Starting JWT Authentication with Error Handling" Level="Info" Message="Starting JWT authentication with comprehensive error handling..." />
+    <ui:LogMessage DisplayName="Starting JWT Authentication with Error Handling" Level="Info" Message="Starting JWT authentication with comprehensive error handling..." />
     
     <TryCatch DisplayName="JWT Authentication with Error Handling">
       <Try>
-        <InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
+        <ui:InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
           <Arguments>
             <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
             <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
             <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
           </Arguments>
-        </InvokeWorkflowFile>
+        </ui:InvokeWorkflowFile>
         
-        <LogMessage DisplayName="JWT Authentication Successful" Level="Info" Message="[&quot;JWT authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
+        <ui:LogMessage DisplayName="JWT Authentication Successful" Level="Info" Message="[&quot;JWT authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
       </Try>
       <Catch>
-        <LogMessage DisplayName="JWT Authentication Failed" Level="Error" Message="[&quot;JWT authentication failed: &quot; + Exception.Message]" />
-        <LogMessage DisplayName="Exception Details" Level="Error" Message="[&quot;Exception details: &quot; + Exception.ToString()]" />
+        <ui:LogMessage DisplayName="JWT Authentication Failed" Level="Error" Message="[&quot;JWT authentication failed: &quot; + Exception.Message]" />
+        <ui:LogMessage DisplayName="Exception Details" Level="Error" Message="[&quot;Exception details: &quot; + Exception.ToString()]" />
         
         <!-- Set error message -->
         <Assign DisplayName="Set Error Message">
@@ -40,7 +40,7 @@
         </Assign>
         
         <!-- Log error and exit -->
-        <LogMessage DisplayName="Exiting Due to Authentication Failure" Level="Error" Message="Exiting workflow due to authentication failure." />
+        <ui:LogMessage DisplayName="Exiting Due to Authentication Failure" Level="Error" Message="Exiting workflow due to authentication failure." />
         <Throw DisplayName="Throw Authentication Error">
           <Throw.Exception>
             <InArgument x:TypeArguments="x:Exception">[New Exception("JWT Authentication failed: " + Exception.Message)]</InArgument>
@@ -50,28 +50,28 @@
     </TryCatch>
     
     <!-- Step 2: Token Validation with Error Handling -->
-    <LogMessage DisplayName="Validating Token" Level="Info" Message="Validating JWT token..." />
+    <ui:LogMessage DisplayName="Validating Token" Level="Info" Message="Validating JWT token..." />
     
     <TryCatch DisplayName="Token Validation with Error Handling">
       <Try>
-        <InvokeWorkflowFile DisplayName="Validate Token" WorkflowFileName="Activities\ValidateToken.xaml">
+        <ui:InvokeWorkflowFile DisplayName="Validate Token" WorkflowFileName="Activities\ValidateToken.xaml">
           <Arguments>
             <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
             <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
             <Argument x:TypeArguments="x:Boolean" Name="IsValid" Value="[IsValid]" />
             <Argument x:TypeArguments="x:String" Name="ErrorMessage" Value="[ErrorMessage]" />
           </Arguments>
-        </InvokeWorkflowFile>
+        </ui:InvokeWorkflowFile>
         
         <If DisplayName="Check Token Validity">
           <If.Condition>
             <InArgument x:TypeArguments="x:Boolean">[IsValid]</InArgument>
           </If.Condition>
           <If.Then>
-            <LogMessage DisplayName="Token Validation Successful" Level="Info" Message="Token validation successful!" />
+            <ui:LogMessage DisplayName="Token Validation Successful" Level="Info" Message="Token validation successful!" />
           </If.Then>
           <If.Else>
-            <LogMessage DisplayName="Token Validation Failed" Level="Error" Message="[&quot;Token validation failed: &quot; + ErrorMessage]" />
+            <ui:LogMessage DisplayName="Token Validation Failed" Level="Error" Message="[&quot;Token validation failed: &quot; + ErrorMessage]" />
             <Throw DisplayName="Throw Token Validation Error">
               <Throw.Exception>
                 <InArgument x:TypeArguments="x:Exception">[New Exception("Token validation failed: " + ErrorMessage)]</InArgument>
@@ -81,7 +81,7 @@
         </If>
       </Try>
       <Catch>
-        <LogMessage DisplayName="Token Validation Exception" Level="Error" Message="[&quot;Token validation failed with exception: &quot; + Exception.Message]" />
+        <ui:LogMessage DisplayName="Token Validation Exception" Level="Error" Message="[&quot;Token validation failed with exception: &quot; + Exception.Message]" />
         <Throw DisplayName="Throw Token Validation Exception">
           <Throw.Exception>
             <InArgument x:TypeArguments="x:Exception">[New Exception("Token validation failed with exception: " + Exception.Message)]</InArgument>
@@ -91,24 +91,24 @@
     </TryCatch>
     
     <!-- Step 3: API Call with Error Handling -->
-    <LogMessage DisplayName="Making API Call with Error Handling" Level="Info" Message="Making API call with comprehensive error handling..." />
+    <ui:LogMessage DisplayName="Making API Call with Error Handling" Level="Info" Message="Making API call with comprehensive error handling..." />
     
     <TryCatch DisplayName="API Call with Error Handling">
       <Try>
-        <HttpRequest DisplayName="Get Account Describe" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
-          <HttpRequest.Headers>
+        <ui:HttpRequest DisplayName="Get Account Describe" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
+          <ui:HttpRequest.Headers>
             <scg:Dictionary x:TypeArguments="x:String, x:String">
               <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
               <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
             </scg:Dictionary>
-          </HttpRequest.Headers>
-          <HttpRequest.Result>
+          </ui:HttpRequest.Headers>
+          <ui:HttpRequest.Result>
             <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
-          </HttpRequest.Result>
-          <HttpRequest.StatusCode>
+          </ui:HttpRequest.Result>
+          <ui:HttpRequest.StatusCode>
             <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
-          </HttpRequest.StatusCode>
-        </HttpRequest>
+          </ui:HttpRequest.StatusCode>
+        </ui:HttpRequest>
         
         <!-- Check API response -->
         <If DisplayName="Check API Response">
@@ -116,12 +116,12 @@
             <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
           </If.Condition>
           <If.Then>
-            <LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully!" />
-            <LogMessage DisplayName="Response Length" Level="Info" Message="[&quot;Response length: &quot; + APIResponse.Length.ToString() + &quot; characters&quot;]" />
+            <ui:LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully!" />
+            <ui:LogMessage DisplayName="Response Length" Level="Info" Message="[&quot;Response length: &quot; + APIResponse.Length.ToString() + &quot; characters&quot;]" />
           </If.Then>
           <If.Else>
-            <LogMessage DisplayName="API Call Failed" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
-            <LogMessage DisplayName="Error Response" Level="Error" Message="[&quot;Error response: &quot; + APIResponse]" />
+            <ui:LogMessage DisplayName="API Call Failed" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
+            <ui:LogMessage DisplayName="Error Response" Level="Error" Message="[&quot;Error response: &quot; + APIResponse]" />
             
             <!-- Handle specific error codes -->
             <If DisplayName="Handle Specific Error Codes">
@@ -129,7 +129,7 @@
                 <InArgument x:TypeArguments="x:Boolean">[StatusCode = 401]</InArgument>
               </If.Condition>
               <If.Then>
-                <LogMessage DisplayName="Unauthorized Error" Level="Error" Message="401 Unauthorized - Token may be expired or invalid" />
+                <ui:LogMessage DisplayName="Unauthorized Error" Level="Error" Message="401 Unauthorized - Token may be expired or invalid" />
                 <Throw DisplayName="Throw Unauthorized Error">
                   <Throw.Exception>
                     <InArgument x:TypeArguments="x:Exception">[New Exception("401 Unauthorized - Token may be expired or invalid")]</InArgument>
@@ -142,7 +142,7 @@
                     <InArgument x:TypeArguments="x:Boolean">[StatusCode = 403]</InArgument>
                   </If.Condition>
                   <If.Then>
-                    <LogMessage DisplayName="Forbidden Error" Level="Error" Message="403 Forbidden - Insufficient permissions" />
+                    <ui:LogMessage DisplayName="Forbidden Error" Level="Error" Message="403 Forbidden - Insufficient permissions" />
                     <Throw DisplayName="Throw Forbidden Error">
                       <Throw.Exception>
                         <InArgument x:TypeArguments="x:Exception">[New Exception("403 Forbidden - Insufficient permissions")]</InArgument>
@@ -150,7 +150,7 @@
                     </Throw>
                   </If.Then>
                   <If.Else>
-                    <LogMessage DisplayName="Other Error" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
+                    <ui:LogMessage DisplayName="Other Error" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
                     <Throw DisplayName="Throw Other Error">
                       <Throw.Exception>
                         <InArgument x:TypeArguments="x:Exception">[New Exception("API call failed with status code: " + StatusCode.ToString())]</InArgument>
@@ -164,8 +164,8 @@
         </If>
       </Try>
       <Catch>
-        <LogMessage DisplayName="API Call Exception" Level="Error" Message="[&quot;API call failed with exception: &quot; + Exception.Message]" />
-        <LogMessage DisplayName="Exception Details" Level="Error" Message="[&quot;Exception details: &quot; + Exception.ToString()]" />
+        <ui:LogMessage DisplayName="API Call Exception" Level="Error" Message="[&quot;API call failed with exception: &quot; + Exception.Message]" />
+        <ui:LogMessage DisplayName="Exception Details" Level="Error" Message="[&quot;Exception details: &quot; + Exception.ToString()]" />
         
         <!-- Handle specific exception types -->
         <If DisplayName="Handle Specific Exceptions">
@@ -173,7 +173,7 @@
             <InArgument x:TypeArguments="x:Boolean">[Exception.Message.Contains("timeout")]</InArgument>
           </If.Condition>
           <If.Then>
-            <LogMessage DisplayName="Timeout Exception" Level="Error" Message="Timeout exception detected - network or server issue" />
+            <ui:LogMessage DisplayName="Timeout Exception" Level="Error" Message="Timeout exception detected - network or server issue" />
             <Throw DisplayName="Throw Timeout Exception">
               <Throw.Exception>
                 <InArgument x:TypeArguments="x:Exception">[New Exception("Timeout exception detected - network or server issue: " + Exception.Message)]</InArgument>
@@ -186,7 +186,7 @@
                 <InArgument x:TypeArguments="x:Boolean">[Exception.Message.Contains("network")]</InArgument>
               </If.Condition>
               <If.Then>
-                <LogMessage DisplayName="Network Exception" Level="Error" Message="Network exception detected - connectivity issue" />
+                <ui:LogMessage DisplayName="Network Exception" Level="Error" Message="Network exception detected - connectivity issue" />
                 <Throw DisplayName="Throw Network Exception">
                   <Throw.Exception>
                     <InArgument x:TypeArguments="x:Exception">[New Exception("Network exception detected - connectivity issue: " + Exception.Message)]</InArgument>
@@ -194,7 +194,7 @@
                 </Throw>
               </If.Then>
               <If.Else>
-                <LogMessage DisplayName="General Exception" Level="Error" Message="[&quot;General exception: &quot; + Exception.Message]" />
+                <ui:LogMessage DisplayName="General Exception" Level="Error" Message="[&quot;General exception: &quot; + Exception.Message]" />
                 <Throw DisplayName="Throw General Exception">
                   <Throw.Exception>
                     <InArgument x:TypeArguments="x:Exception">[New Exception("General exception: " + Exception.Message)]</InArgument>
@@ -208,12 +208,12 @@
     </TryCatch>
     
     <!-- Step 4: Success -->
-    <LogMessage DisplayName="Error Handling Example Complete" Level="Info" Message="Error handling example completed successfully!" />
-    <LogMessage DisplayName="Summary" Level="Info" Message="=== ERROR HANDLING SUMMARY ===" />
-    <LogMessage DisplayName="Authentication Errors" Level="Info" Message="✓ JWT Authentication errors handled" />
-    <LogMessage DisplayName="Token Validation Errors" Level="Info" Message="✓ Token validation errors handled" />
-    <LogMessage DisplayName="API Call Errors" Level="Info" Message="✓ API call errors handled" />
-    <LogMessage DisplayName="Specific Error Codes" Level="Info" Message="✓ Specific error codes handled (401, 403, etc.)" />
-    <LogMessage DisplayName="Exception Types" Level="Info" Message="✓ Different exception types handled" />
+    <ui:LogMessage DisplayName="Error Handling Example Complete" Level="Info" Message="Error handling example completed successfully!" />
+    <ui:LogMessage DisplayName="Summary" Level="Info" Message="=== ERROR HANDLING SUMMARY ===" />
+    <ui:LogMessage DisplayName="Authentication Errors" Level="Info" Message="✓ JWT Authentication errors handled" />
+    <ui:LogMessage DisplayName="Token Validation Errors" Level="Info" Message="✓ Token validation errors handled" />
+    <ui:LogMessage DisplayName="API Call Errors" Level="Info" Message="✓ API call errors handled" />
+    <ui:LogMessage DisplayName="Specific Error Codes" Level="Info" Message="✓ Specific error codes handled (401, 403, etc.)" />
+    <ui:LogMessage DisplayName="Exception Types" Level="Info" Message="✓ Different exception types handled" />
   </Sequence>
 </Activity>

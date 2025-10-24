@@ -20,20 +20,20 @@
     <!-- Test Token with API Call -->
     <TryCatch DisplayName="Test Token with API Call">
       <Try>
-        <HttpRequest DisplayName="Test API Call" Method="GET" Url="[TestEndpoint]">
-          <HttpRequest.Headers>
+        <ui:HttpRequest DisplayName="Test API Call" Method="GET" Url="[TestEndpoint]">
+          <ui:HttpRequest.Headers>
             <scg:Dictionary x:TypeArguments="x:String, x:String">
               <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
               <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
             </scg:Dictionary>
-          </HttpRequest.Headers>
-          <HttpRequest.Result>
+          </ui:HttpRequest.Headers>
+          <ui:HttpRequest.Result>
             <OutArgument x:TypeArguments="x:String">[ResponseBody]</OutArgument>
-          </HttpRequest.Result>
-          <HttpRequest.StatusCode>
+          </ui:HttpRequest.Result>
+          <ui:HttpRequest.StatusCode>
             <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
-          </HttpRequest.StatusCode>
-        </HttpRequest>
+          </ui:HttpRequest.StatusCode>
+        </ui:HttpRequest>
         
         <!-- Check Response Status -->
         <If DisplayName="Check API Response">
@@ -59,7 +59,7 @@
               </Assign.Value>
             </Assign>
             
-            <LogMessage DisplayName="Token Validation Successful" Level="Info" Message="Token is valid and working correctly." />
+            <ui:LogMessage DisplayName="Token Validation Successful" Level="Info" Message="Token is valid and working correctly." />
           </If.Then>
           <If.Else>
             <Assign DisplayName="Set Token Invalid">
@@ -80,7 +80,7 @@
               </Assign.Value>
             </Assign>
             
-            <LogMessage DisplayName="Token Validation Failed" Level="Error" Message="[&quot;Token validation failed. Status: &quot; + StatusCode.ToString() + &quot;, Response: &quot; + ResponseBody]" />
+            <ui:LogMessage DisplayName="Token Validation Failed" Level="Error" Message="[&quot;Token validation failed. Status: &quot; + StatusCode.ToString() + &quot;, Response: &quot; + ResponseBody]" />
           </If.Else>
         </If>
       </Try>
@@ -103,7 +103,7 @@
           </Assign.Value>
         </Assign>
         
-        <LogMessage DisplayName="Token Validation Exception" Level="Error" Message="[&quot;Token validation failed with exception: &quot; + Exception.Message]" />
+        <ui:LogMessage DisplayName="Token Validation Exception" Level="Error" Message="[&quot;Token validation failed with exception: &quot; + Exception.Message]" />
       </Catch>
     </TryCatch>
   </Sequence>

@@ -9,35 +9,35 @@
     <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
     
     <!-- Step 1: Get JWT Token -->
-    <LogMessage DisplayName="Starting JWT Authentication" Level="Info" Message="Starting JWT authentication process..." />
+    <ui:LogMessage DisplayName="Starting JWT Authentication" Level="Info" Message="Starting JWT authentication process..." />
     
-    <InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
+    <ui:InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
       <Arguments>
         <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
         <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
         <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
       </Arguments>
-    </InvokeWorkflowFile>
+    </ui:InvokeWorkflowFile>
     
-    <LogMessage DisplayName="JWT Authentication Complete" Level="Info" Message="[&quot;JWT authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
+    <ui:LogMessage DisplayName="JWT Authentication Complete" Level="Info" Message="[&quot;JWT authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
     
     <!-- Step 2: Make API Call -->
-    <LogMessage DisplayName="Making API Call" Level="Info" Message="Making API call to Salesforce..." />
+    <ui:LogMessage DisplayName="Making API Call" Level="Info" Message="Making API call to Salesforce..." />
     
-    <HttpRequest DisplayName="Get Account Describe" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
-      <HttpRequest.Headers>
+    <ui:HttpRequest DisplayName="Get Account Describe" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
+      <ui:HttpRequest.Headers>
         <scg:Dictionary x:TypeArguments="x:String, x:String">
           <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
           <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
         </scg:Dictionary>
-      </HttpRequest.Headers>
-      <HttpRequest.Result>
+      </ui:HttpRequest.Headers>
+      <ui:HttpRequest.Result>
         <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
-      </HttpRequest.Result>
-      <HttpRequest.StatusCode>
+      </ui:HttpRequest.Result>
+      <ui:HttpRequest.StatusCode>
         <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
-      </HttpRequest.StatusCode>
-    </HttpRequest>
+      </ui:HttpRequest.StatusCode>
+    </ui:HttpRequest>
     
     <!-- Step 3: Check Response -->
     <If DisplayName="Check API Response">
@@ -45,16 +45,16 @@
         <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
       </If.Condition>
       <If.Then>
-        <LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully!" />
-        <LogMessage DisplayName="Response Length" Level="Info" Message="[&quot;Response length: &quot; + APIResponse.Length.ToString() + &quot; characters&quot;]" />
+        <ui:LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully!" />
+        <ui:LogMessage DisplayName="Response Length" Level="Info" Message="[&quot;Response length: &quot; + APIResponse.Length.ToString() + &quot; characters&quot;]" />
       </If.Then>
       <If.Else>
-        <LogMessage DisplayName="API Call Failed" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
-        <LogMessage DisplayName="Error Response" Level="Error" Message="[&quot;Error response: &quot; + APIResponse]" />
+        <ui:LogMessage DisplayName="API Call Failed" Level="Error" Message="[&quot;API call failed with status code: &quot; + StatusCode.ToString()]" />
+        <ui:LogMessage DisplayName="Error Response" Level="Error" Message="[&quot;Error response: &quot; + APIResponse]" />
       </If.Else>
     </If>
     
     <!-- Step 4: Complete -->
-    <LogMessage DisplayName="Example Complete" Level="Info" Message="Basic JWT usage example completed successfully!" />
+    <ui:LogMessage DisplayName="Example Complete" Level="Info" Message="Basic JWT usage example completed successfully!" />
   </Sequence>
 </Activity>

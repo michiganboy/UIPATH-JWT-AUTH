@@ -10,7 +10,7 @@
     <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
     
     <!-- Read Private Key -->
-    <ReadTextFile DisplayName="Read Private Key" FileName="[PrivateKeyPath]" Text="[PrivateKey]" />
+    <ui:ReadTextFile DisplayName="Read Private Key" FileName="[PrivateKeyPath]" Text="[PrivateKey]" />
     
     <!-- Generate JWT -->
     <InvokeMethod DisplayName="Generate JWT" MethodName="GenerateJWT">
@@ -49,22 +49,22 @@
     </Assign>
     
     <!-- Exchange JWT for Access Token -->
-    <HttpRequest DisplayName="Exchange JWT for Access Token" Method="POST" Url="[TokenEndpoint]">
-      <HttpRequest.Headers>
+    <ui:HttpRequest DisplayName="Exchange JWT for Access Token" Method="POST" Url="[TokenEndpoint]">
+      <ui:HttpRequest.Headers>
         <scg:Dictionary x:TypeArguments="x:String, x:String">
           <KeyValuePair x:Key="Content-Type" x:Value="application/x-www-form-urlencoded" />
         </scg:Dictionary>
-      </HttpRequest.Headers>
-      <HttpRequest.Body>
+      </ui:HttpRequest.Headers>
+      <ui:HttpRequest.Body>
         <InArgument x:TypeArguments="x:String">[RequestBody]</InArgument>
-      </HttpRequest.Body>
-      <HttpRequest.Result>
+      </ui:HttpRequest.Body>
+      <ui:HttpRequest.Result>
         <OutArgument x:TypeArguments="x:String">[ResponseBody]</OutArgument>
-      </HttpRequest.Result>
-      <HttpRequest.StatusCode>
+      </ui:HttpRequest.Result>
+      <ui:HttpRequest.StatusCode>
         <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
-      </HttpRequest.StatusCode>
-    </HttpRequest>
+      </ui:HttpRequest.StatusCode>
+    </ui:HttpRequest>
     
     <!-- Check Response Status -->
     <If DisplayName="Check Response Status">
@@ -115,10 +115,10 @@
           </Assign.Value>
         </Assign>
         
-        <LogMessage DisplayName="Token Retrieved Successfully" Level="Info" Message="[&quot;Access token retrieved successfully. Expires at: &quot; + TokenExpiry.ToString()]" />
+        <ui:LogMessage DisplayName="Token Retrieved Successfully" Level="Info" Message="[&quot;Access token retrieved successfully. Expires at: &quot; + TokenExpiry.ToString()]" />
       </If.Then>
       <If.Else>
-        <LogMessage DisplayName="Token Exchange Failed" Level="Error" Message="[&quot;Failed to exchange JWT for access token. Status: &quot; + StatusCode.ToString() + &quot;, Response: &quot; + ResponseBody]" />
+        <ui:LogMessage DisplayName="Token Exchange Failed" Level="Error" Message="[&quot;Failed to exchange JWT for access token. Status: &quot; + StatusCode.ToString() + &quot;, Response: &quot; + ResponseBody]" />
         <Throw DisplayName="Throw Token Exchange Error">
           <Throw.Exception>
             <InArgument x:TypeArguments="x:Exception">[New Exception("Failed to exchange JWT for access token. Status: " + StatusCode.ToString())]</InArgument>

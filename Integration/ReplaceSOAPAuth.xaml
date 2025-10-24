@@ -10,16 +10,16 @@
     <Variable x:TypeArguments="x:DateTime" Name="NewExpiry" />
     
     <!-- Get JWT Token -->
-    <InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="..\Main.xaml">
+    <ui:InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="..\Main.xaml">
       <Arguments>
         <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
         <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
         <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
       </Arguments>
-    </InvokeWorkflowFile>
+    </ui:InvokeWorkflowFile>
     
     <!-- Check if token needs refresh before making API calls -->
-    <InvokeWorkflowFile DisplayName="Check Token Refresh" WorkflowFileName="Activities\RefreshToken.xaml">
+    <ui:InvokeWorkflowFile DisplayName="Check Token Refresh" WorkflowFileName="Activities\RefreshToken.xaml">
       <Arguments>
         <Argument x:TypeArguments="x:String" Name="CurrentToken" Value="[AccessToken]" />
         <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
@@ -27,7 +27,7 @@
         <Argument x:TypeArguments="x:String" Name="NewToken" Value="[NewToken]" />
         <Argument x:TypeArguments="x:DateTime" Name="NewExpiry" Value="[NewExpiry]" />
       </Arguments>
-    </InvokeWorkflowFile>
+    </ui:InvokeWorkflowFile>
     
     <!-- Use refreshed token if needed -->
     <If DisplayName="Use Refreshed Token">
@@ -56,18 +56,18 @@
     </If>
     
     <!-- Example: Make API call with JWT token -->
-    <HttpRequest DisplayName="Make API Call with JWT Token" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
-      <HttpRequest.Headers>
+    <ui:HttpRequest DisplayName="Make API Call with JWT Token" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
+      <ui:HttpRequest.Headers>
         <scg:Dictionary x:TypeArguments="x:String, x:String">
           <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
           <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
         </scg:Dictionary>
-      </HttpRequest.Headers>
-      <HttpRequest.Result>
+      </ui:HttpRequest.Headers>
+      <ui:HttpRequest.Result>
         <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
-      </HttpRequest.Result>
-    </HttpRequest>
+      </ui:HttpRequest.Result>
+    </ui:HttpRequest>
     
-    <LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully with JWT authentication." />
+    <ui:LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully with JWT authentication." />
   </Sequence>
 </Activity>

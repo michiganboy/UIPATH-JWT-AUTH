@@ -39,7 +39,7 @@
     </Assign>
     
     <!-- Get Salesforce Token -->
-    <InvokeWorkflowFile DisplayName="Get Salesforce Token" WorkflowFileName="Activities\GetSalesforceToken.xaml">
+    <ui:InvokeWorkflowFile DisplayName="Get Salesforce Token" WorkflowFileName="Activities\GetSalesforceToken.xaml">
       <Arguments>
         <Argument x:TypeArguments="x:String" Name="ClientId" Value="[ClientId]" />
         <Argument x:TypeArguments="x:String" Name="Username" Value="[Username]" />
@@ -49,17 +49,17 @@
         <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
         <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
       </Arguments>
-    </InvokeWorkflowFile>
+    </ui:InvokeWorkflowFile>
     
     <!-- Validate Token -->
-    <InvokeWorkflowFile DisplayName="Validate Token" WorkflowFileName="Activities\ValidateToken.xaml">
+    <ui:InvokeWorkflowFile DisplayName="Validate Token" WorkflowFileName="Activities\ValidateToken.xaml">
       <Arguments>
         <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
         <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
         <Argument x:TypeArguments="x:Boolean" Name="IsValid" Value="[IsValid]" />
         <Argument x:TypeArguments="x:String" Name="ErrorMessage" Value="[ErrorMessage]" />
       </Arguments>
-    </InvokeWorkflowFile>
+    </ui:InvokeWorkflowFile>
     
     <!-- Log Results -->
     <If DisplayName="Check Authentication Result">
@@ -67,10 +67,10 @@
         <InArgument x:TypeArguments="x:Boolean">[IsValid]</InArgument>
       </If.Condition>
       <If.Then>
-        <LogMessage DisplayName="Authentication Successful" Level="Info" Message="[&quot;Salesforce JWT Authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
+        <ui:LogMessage DisplayName="Authentication Successful" Level="Info" Message="[&quot;Salesforce JWT Authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
       </If.Then>
       <If.Else>
-        <LogMessage DisplayName="Authentication Failed" Level="Error" Message="[&quot;Salesforce JWT Authentication failed: &quot; + ErrorMessage]" />
+        <ui:LogMessage DisplayName="Authentication Failed" Level="Error" Message="[&quot;Salesforce JWT Authentication failed: &quot; + ErrorMessage]" />
         <Throw DisplayName="Throw Authentication Error">
           <Throw.Exception>
             <InArgument x:TypeArguments="x:Exception">[New Exception(ErrorMessage)]</InArgument>
