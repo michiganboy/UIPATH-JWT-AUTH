@@ -1,209 +1,131 @@
 # UiPath JWT Authentication Library
 
-A complete **C#-based** JWT authentication library for UiPath Studio that replaces Salesforce SOAP authentication with secure JWT Bearer Token flow. Uses native C# code with NuGet packages for full JWT functionality.
+A complete **JWT Authentication** framework for UiPath Studio that implements secure Salesforce JWT Bearer Token authentication.  
+Compatible with **Windows-Legacy** projects and includes full code, configuration, and usage instructions.
 
-## Features
+---
 
-- ✅ **Native UiPath Support**: C# code integrates directly with UiPath
-- ✅ **Full JWT Capability**: Handles all JWT requirements including RSA signing
-- ✅ **No External Dependencies**: Everything runs within UiPath
-- ✅ **Hands-off Authentication**: No manual login required
-- ✅ **Secure**: Uses JWT with private key signing
-- ✅ **Automatic Refresh**: Handles token expiry automatically
-- ✅ **Drop-in Replacement**: Minimal changes to existing workflows
-- ✅ **Production Ready**: Handles all edge cases and errors
+## 📘 Overview
 
-## Prerequisites
+This project provides a complete, ready-to-use implementation for authenticating with Salesforce using JWT Bearer tokens instead of SOAP-based credentials.
 
-- UiPath Studio installed
-- .NET Framework 4.6.1 or higher
-- Salesforce Connected App with JWT enabled
-- Private key certificate (.pem file)
+It supports:
+- Full JWT generation (RSA-signed)
+- Access token retrieval from Salesforce
+- Token refresh and validation
+- Config-driven setup (JSON + PEM certificate)
+- Legacy-safe implementation for UiPath 2021+
 
-## Quick Start
-
-### 1. Install Required NuGet Packages
-In UiPath Studio, install these packages:
-
-#### **Core JWT Libraries**
-- `System.IdentityModel.Tokens.Jwt` (v6.0.0+)
-- `Microsoft.IdentityModel.Tokens` (v6.0.0+)
-
-#### **JSON Processing**
-- `System.Text.Json` (v6.0.0+)
-
-#### **Cryptography**
-- `System.Security.Cryptography` (v4.3.0+)
-
-### 2. Copy Files to Your UiPath Project
-1. **Create a new UiPath project** in UiPath Studio
-2. **Copy all XAML files** to your project directory
-3. **Copy the Code folder** with C# files
-4. **Copy the Config folder** with your settings
-
-### 3. Configure Salesforce
-Update `Config/JWT-Config.json`:
-```json
-{
-  "Salesforce": {
-    "LoginUrl": "https://login.salesforce.com",
-    "ClientId": "YOUR_CONNECTED_APP_CLIENT_ID",
-    "Username": "YOUR_SALESFORCE_USERNAME",
-    "PrivateKeyPath": "Config/Certificate.pem",
-    "TokenEndpoint": "/services/oauth2/token"
-  }
-}
+Repository path:  
+```
+UiPath-JWT-Auth/
 ```
 
-### 4. Add Your Certificate
-Place your `.pem` certificate file in `Config/Certificate.pem`
+---
 
-### 5. Test the Library
-Run `Examples/BasicUsage.xaml` to test JWT authentication
+## 🪟 Windows-Legacy Compatibility
 
-## Project Structure
+All `.xaml` files are written for **Windows-Legacy** UiPath projects using the **.NET Framework 4.6.1** runtime.
+
+> ❗ Coded workflows (.cs files run directly in UiPath) are **not supported** in Windows-Legacy.  
+> You can, however, invoke compiled DLL methods or use inline **Invoke Code** activities.
+
+---
+
+## 🧱 Project Structure
 
 ```
 UiPath-JWT-Auth/
-├── Main.xaml                           # Main workflow orchestrator
+├── Main.xaml
 ├── Activities/
-│   ├── GetSalesforceToken.xaml         # JWT token generation
-│   ├── RefreshToken.xaml                # Token refresh logic
-│   └── ValidateToken.xaml               # Token validation
+│   ├── GetSalesforceToken.xaml
+│   ├── RefreshToken.xaml
+│   ├── ValidateToken.xaml
+│   ├── ErrorHandling.xaml
 ├── Code/
-│   ├── JWTGenerator.cs                 # JWT generation logic
-│   ├── TokenParser.cs                  # Response parsing
-│   └── README.md                       # Code documentation
+│   ├── JWTGenerator.cs
+│   ├── TokenParser.cs
 ├── Config/
-│   ├── JWT-Config.json                 # Configuration file
-│   └── Certificate.pem.example         # Certificate template
+│   ├── JWT-Config.json
+│   └── Certificate.pem.example
 ├── Examples/
-│   ├── BasicUsage.xaml                 # Simple usage example
-│   ├── AdvancedUsage.xaml              # Advanced with retry logic
-│   ├── MigrationExample.xaml           # SOAP to JWT migration
-│   ├── ErrorHandling.xaml              # Comprehensive error handling
-│   ├── ProductionExample.xaml          # Production-ready implementation
+│   ├── BasicUsage.xaml
+│   ├── AdvancedUsage.xaml
+│   ├── MigrationExample.xaml
+│   ├── ProductionExample.xaml
 └── Integration/
-    └── ReplaceSOAPAuth.xaml             # Migration example
+    └── ReplaceSOAPAuth.xaml
 ```
 
-## How It Works
+---
 
-### **C# + UiPath Integration**
-- **C# code** handles JWT generation and parsing
-- **UiPath workflows** orchestrate the authentication process
-- **NuGet packages** provide JWT and cryptographic functionality
-- **Native integration** through InvokeMethod activities
+### 🔄 Workflow Flow Overview
 
-### **JWT Generation Process**
-1. **C# JWTGenerator** creates JWT token with RSA signing
-2. **UiPath workflow** calls the C# method
-3. **HTTP request** exchanges JWT for access token
-4. **C# TokenParser** processes Salesforce response
-5. **UiPath workflow** uses the access token for API calls
-
-## Usage
-
-### Basic Authentication
-```xml
-<InvokeMethod DisplayName="Generate JWT" MethodName="GenerateJWT">
-  <InvokeMethod.TargetObject>
-    <InArgument x:TypeArguments="x:Object">[New SalesforceJWT.JWTGenerator()]</InArgument>
-  </InvokeMethod.TargetObject>
-  <InvokeMethod.Parameters>
-    <Argument x:TypeArguments="x:String" Name="clientId" Value="[ClientId]" />
-    <Argument x:TypeArguments="x:String" Name="username" Value="[Username]" />
-    <Argument x:TypeArguments="x:String" Name="loginUrl" Value="[LoginUrl]" />
-    <Argument x:TypeArguments="x:String" Name="privateKey" Value="[PrivateKey]" />
-  </InvokeMethod.Parameters>
-  <InvokeMethod.Result>
-    <OutArgument x:TypeArguments="x:String">[JWT]</OutArgument>
-  </InvokeMethod.Result>
-</InvokeMethod>
+```text
+                ┌────────────────────────────┐
+                │        Main.xaml           │
+                └────────────┬───────────────┘
+                             │
+                             ▼
+             ┌───────────────────────────────┐
+             │   GetSalesforceToken.xaml     │
+             └────────────┬──────────────────┘
+                          │
+          ┌───────────────┼──────────────────────────────┐
+          │               │                              │
+          ▼               ▼                              ▼
+ ┌────────────────┐ ┌────────────────┐          ┌────────────────┐
+ │ ValidateToken  │ │ RefreshToken   │          │ ErrorHandling  │
+ │ .xaml          │ │ .xaml          │          │ .xaml          │
+ └──────┬─────────┘ └──────┬─────────┘          └───────┬────────┘
+        │                  │                            │
+        └──────────┬───────┘                            │
+                   ▼                                    │
+          ┌────────────────────┐                        │
+          │ ProductionExample  │<───────────────────────┘
+          │ .xaml              │
+          └────────────────────┘
 ```
 
-### Making API Calls
-```xml
-<HttpRequest DisplayName="Make API Call" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
-  <HttpRequest.Headers>
-    <Dictionary x:TypeArguments="x:String, x:String">
-      <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
-      <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
-    </Dictionary>
-  </HttpRequest.Headers>
-</HttpRequest>
+---
+
+## ⚙️ Required Packages
+
+### 🧩 UiPath Activity Packages (install via Manage Packages)
+
+| Package | Purpose |
+|----------|----------|
+| **UiPath.System.Activities** | Core activities such as LogMessage, Assign, If, InvokeWorkflowFile |
+| **UiPath.WebAPI.Activities** | Provides HttpRequest activity used for REST and JWT calls |
+
+> These two are required to open and run any `.xaml` file without “missing activity” errors.  
+> Without them, UiPath may interpret the project as Windows (.NET 6).
+
+### 🧰 .NET Libraries (for C# code)
+
+These are used in the C# helper files for JWT generation and parsing:
+
+- `System.IdentityModel.Tokens.Jwt`
+- `Microsoft.IdentityModel.Tokens`
+- `System.Text.Json`
+- `System.Security.Cryptography`
+
+---
+
+## 🔧 Configuration
+
+All configuration is handled via the `Config` folder.
+
+### Example layout
+
+```
+Config/
+├── JWT-Config.json
+└── Certificate.pem
 ```
 
-### Token Refresh
-```xml
-<InvokeWorkflowFile DisplayName="Refresh Token" WorkflowFileName="Activities\RefreshToken.xaml">
-  <Arguments>
-    <Argument x:TypeArguments="x:String" Name="CurrentToken" Value="[AccessToken]" />
-    <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
-    <Argument x:TypeArguments="x:Boolean" Name="IsRefreshed" Value="[IsRefreshed]" />
-    <Argument x:TypeArguments="x:String" Name="NewToken" Value="[NewToken]" />
-    <Argument x:TypeArguments="x:DateTime" Name="NewExpiry" Value="[NewExpiry]" />
-  </Arguments>
-</InvokeWorkflowFile>
-```
+### Example `JWT-Config.json`
 
-## Migration from SOAP
-
-### Before (SOAP)
-```xml
-<HttpRequest>
-  <Headers>
-    <Header Name="SOAPAction" Value="login" />
-  </Headers>
-</HttpRequest>
-```
-
-### After (JWT)
-```xml
-<HttpRequest>
-  <Headers>
-    <Header Name="Authorization" Value="Bearer " + AccessToken />
-  </Headers>
-</HttpRequest>
-```
-
-## Examples
-
-### 1. BasicUsage.xaml
-Simple JWT authentication and API call
-- Basic token retrieval
-- Simple API call
-- Response validation
-
-### 2. AdvancedUsage.xaml
-Advanced authentication with retry logic
-- JWT authentication with retry
-- Token refresh checking
-- API call retry mechanism
-
-### 3. MigrationExample.xaml
-SOAP to JWT migration demonstration
-- Side-by-side comparison
-- Header replacement examples
-- Migration patterns
-
-### 4. ErrorHandling.xaml
-Comprehensive error handling
-- JWT authentication errors
-- Token validation errors
-- API call errors
-- Specific error codes (401, 403, etc.)
-
-### 5. ProductionExample.xaml
-Production-ready implementation
-- Retry logic for authentication
-- Automatic token refresh
-- Comprehensive error handling
-- Production logging
-
-## Configuration
-
-### JWT-Config.json
 ```json
 {
   "Salesforce": {
@@ -212,155 +134,157 @@ Production-ready implementation
     "Username": "YOUR_SALESFORCE_USERNAME",
     "PrivateKeyPath": "Config/Certificate.pem",
     "TokenEndpoint": "/services/oauth2/token"
-  },
-  "Token": {
-    "ExpiryBuffer": 300,
-    "MaxRetries": 3,
-    "RetryDelay": 5000
-  },
-  "Logging": {
-    "Level": "Info",
-    "EnableDetailedLogging": true
   }
 }
 ```
 
-## Error Handling
+> The `.pem` file contains the private key that signs your JWT.  
+> Make sure the path matches exactly what’s defined in your JSON file.
 
-### Try-Catch Blocks
-```xml
-<TryCatch DisplayName="JWT Authentication with Error Handling">
-  <Try>
-    <InvokeMethod DisplayName="Generate JWT" MethodName="GenerateJWT">
-      <InvokeMethod.TargetObject>
-        <InArgument x:TypeArguments="x:Object">[New SalesforceJWT.JWTGenerator()]</InArgument>
-      </InvokeMethod.TargetObject>
-    </InvokeMethod>
-  </Try>
-  <Catch>
-    <LogMessage DisplayName="Error Logging" Level="Error" Message="[Exception.Message]" />
-  </Catch>
-</TryCatch>
+---
+
+## ▶️ Running the Workflows
+
+### Step 1: Open the Project
+Open `UiPath-JWT-Auth` in UiPath Studio and ensure:
+- Compatibility = **Windows-Legacy**
+- Required packages are installed
+
+### Step 2: Configure Files
+Drop your `.pem` and `JWT-Config.json` into the `Config` folder.
+
+### Step 3: Run
+Open and run `Examples/BasicUsage.xaml`.  
+This workflow will:
+1. Read the config file  
+2. Load the private key  
+3. Generate the JWT  
+4. Request a Salesforce access token  
+5. Log and return the response
+
+---
+
+## 📂 Workflow Descriptions & Usage Order
+
+| File | Purpose | Order |
+|------|----------|--------|
+| **BasicUsage.xaml** | Runs the core JWT authentication sequence using config values. | ① |
+| **AdvancedUsage.xaml** | Adds retry logic, configurable delays, and enhanced logging. | ② |
+| **RefreshToken.xaml** | Refreshes expired Salesforce access tokens. | ③ |
+| **ValidateToken.xaml** | Validates tokens before API calls. | ④ |
+| **ErrorHandling.xaml** | Centralized reusable workflow for catching, logging, and rethrowing authentication and HTTP errors. Invoked by other workflows. | 🔁 |
+| **ProductionExample.xaml** | End-to-end orchestration combining validation, refresh, and error handling. | ⑤ |
+| **MigrationExample.xaml** | Demonstrates replacing SOAP-based login with JWT. | Optional |
+| **ReplaceSOAPAuth.xaml** | Legacy reference (commented-out SOAP example). | — |
+
+---
+
+## 🧩 Using the C# Code
+
+The `Code` directory contains reusable C# logic for JWT generation and response parsing.
+
+### Option A — Compile as a DLL (Recommended)
+
+You can build a DLL and call its methods from UiPath using an **Invoke Method** activity.
+
+#### 1. Build with .NET CLI
+```bash
+mkdir SalesforceJWT
+cd SalesforceJWT
+dotnet new classlib -f net461 -n SalesforceJWT
+cd SalesforceJWT
 ```
 
-### Retry Logic
+Replace contents of `SalesforceJWT.csproj` with:
+
 ```xml
-<RetryScope DisplayName="JWT Authentication Retry Logic">
-  <MaxRetryNumber>3</MaxRetryNumber>
-  <RetryInterval>00:00:10</RetryInterval>
-  <InvokeMethod DisplayName="Generate JWT" MethodName="GenerateJWT">
-    <InvokeMethod.TargetObject>
-      <InArgument x:TypeArguments="x:Object">[New SalesforceJWT.JWTGenerator()]</InArgument>
-    </InvokeMethod.TargetObject>
-  </InvokeMethod>
-</RetryScope>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>SalesforceJWT</RootNamespace>
+    <AssemblyName>SalesforceJWT</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.34.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+  </ItemGroup>
+</Project>
 ```
 
-## Installation Guide
+Copy both `JWTGenerator.cs` and `TokenParser.cs` into the folder, then build:
+```bash
+dotnet build -c Release
+```
+Result: `bin\Release\net461\SalesforceJWT.dll`
 
-### Step 1: Create New UiPath Project
-1. Open UiPath Studio
-2. Create new project: `Salesforce-JWT-Auth`
-3. Set project type to **Library** or **Process**
-4. Choose .NET Framework 4.6.1 or higher
+#### 2. Add to UiPath
+Copy `SalesforceJWT.dll` into your UiPath project folder (e.g., `Libraries\SalesforceJWT.dll`).  
+In **Invoke Method**:
 
-### Step 2: Install NuGet Packages
-1. **Go to Manage Packages** in UiPath Studio
-2. **Install the required packages**:
-   - `System.IdentityModel.Tokens.Jwt` (v6.0.0+)
-   - `Microsoft.IdentityModel.Tokens` (v6.0.0+)
-   - `System.Text.Json` (v6.0.0+)
-   - `System.Security.Cryptography` (v4.3.0+)
+| Property | Value |
+|-----------|--------|
+| **TargetType** | `SalesforceJWT.JWTGenerator` |
+| **MethodName** | `GenerateJWT` |
+| **In Arguments** | clientId, username, loginUrl, privateKey |
+| **Out Argument** | jwtToken |
 
-### Step 3: Copy Files
-1. **Copy all XAML files** to your project directory
-2. **Copy Code folder** with C# files
-3. **Copy Config folder** with your settings
-4. **Add your certificate** to Config folder
+---
 
-### Step 4: Configure Salesforce
-1. Create Connected App in Salesforce
-2. Enable JWT authentication
-3. Upload your certificate
-4. Update configuration file
+### Option B — Use Invoke Code (Inline Alternative)
 
-### Step 5: Test Implementation
-1. Run `Examples/BasicUsage.xaml`
-2. Check logs for errors
-3. Verify token generation
+If you cannot compile the DLL, you can embed similar logic using an **Invoke Code** activity.
 
-## Troubleshooting
+Steps:
+1. Read PEM file using `Read Text File`
+2. Read config using `Deserialize JSON`
+3. Inside Invoke Code, create RSA signing and build the JWT manually
+4. Return the JWT string as output
 
-### Common Issues
+> This approach works directly in Legacy projects but is harder to maintain than the DLL method.
 
-1. **Package Installation Fails**
-   - Check .NET Framework version (4.6.1+)
-   - Verify internet connection
-   - Try installing packages individually
+---
 
-2. **Certificate Issues**
-   - Verify .pem file format
-   - Check file path in configuration
-   - Ensure certificate is properly formatted
+## ⚠️ Error Handling Integration
 
-3. **Authentication Failures**
-   - Verify Connected App settings
-   - Check username and client ID
-   - Ensure certificate matches Connected App
+`ErrorHandling.xaml` is now located under `Activities/` and acts as a shared workflow to catch and manage runtime exceptions.
 
-4. **C# Compilation Errors**
-   - Verify all NuGet packages are installed
-   - Check .NET Framework version
-   - Ensure C# files are included in project
+- Automatically invoked by `ProductionExample.xaml` and `AdvancedUsage.xaml`.
+- Handles network issues, authentication failures, and bad HTTP responses.
+- Logs all exceptions using `Log Message` and throws them back to the parent for controlled handling.
 
-### Debug Steps
+If you create new workflows that perform Salesforce API calls, invoke it via:
 
-1. **Enable detailed logging** in configuration
-2. **Test C# methods** individually
-3. **Check package versions** for compatibility
-4. **Verify certificate format** (PEM)
-5. **Test with simple JWT** first
+```
+Activities/ErrorHandling.xaml
+```
 
-## Best Practices
+and wire its arguments (`AccessToken`, `StatusCode`, `ErrorMessage`, etc.) accordingly.
 
-### 1. Always Use Error Handling
-- Wrap JWT authentication in try-catch blocks
-- Handle specific error codes
-- Implement retry logic for transient failures
+---
 
-### 2. Check Token Refresh
-- Always check if token needs refresh before API calls
-- Implement automatic token refresh
-- Handle token expiry gracefully
+## 🧠 Troubleshooting
 
-### 3. Log Everything
-- Log authentication attempts
-- Log API call results
-- Log error details
-- Use appropriate log levels
+| Issue | Cause | Fix |
+|--------|--------|-----|
+| Missing activities | UiPath.System or UiPath.WebAPI not installed | Install packages via Manage Packages |
+| Workflow opens as “Windows” type | Project compatibility not set to Legacy | Set Compatibility = Windows-Legacy |
+| JWT fails to generate | Incorrect PEM or invalid JSON path | Verify `JWT-Config.json` and file names |
+| Missing DLL reference | File not in project path | Add DLL manually and rebuild dependencies |
 
-### 4. Test Thoroughly
-- Test with valid credentials
-- Test with invalid credentials
-- Test network failures
-- Test token expiry scenarios
+---
 
-## Key Benefits
+## ✅ Summary
 
-- **Native UiPath Support** - C# integrates directly with UiPath
-- **Full JWT Capability** - Handles all JWT requirements
-- **No External Dependencies** - Everything runs in UiPath
-- **Production Ready** - Handles all edge cases
-- **Easy Maintenance** - Standard C# development
+- Compatible with **Windows-Legacy** UiPath projects  
+- Requires only `UiPath.System.Activities` and `UiPath.WebAPI.Activities`  
+- Supports both **DLL invocation** and **inline Invoke Code** methods  
+- Fully configurable via JSON and PEM files  
+- Prebuilt example XAMLs included for fast setup  
+- Includes centralized, reusable **ErrorHandling.xaml** workflow
 
-## Support
+---
 
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the error logs
-3. Verify configuration settings
-4. Test with a simple workflow first
-
-## License
-
-This library is provided as-is for internal use. Please ensure compliance with Salesforce terms of service and your organization's security policies.
+© 2025 UiPath JWT Authentication Library  
+Licensed for educational and internal automation use.
