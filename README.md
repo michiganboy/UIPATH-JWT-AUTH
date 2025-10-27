@@ -96,11 +96,10 @@ UiPath-JWT-Auth/
 
 | Package | Purpose |
 |----------|----------|
-| **UiPath.System.Activities** | Core activities such as LogMessage, Assign, If, InvokeWorkflowFile |
-| **UiPath.WebAPI.Activities** | Provides HttpRequest activity used for REST and JWT calls |
+| **UiPath.System.Activities** | Core UiPath activities including HttpRequest, LogMessage, InvokeWorkflowFile |
 
-> These two are required to open and run any `.xaml` file without “missing activity” errors.  
-> Without them, UiPath may interpret the project as Windows (.NET 6).
+> This package is required to open and run any `.xaml` file without "missing activity" errors.  
+> Without it, UiPath may interpret the project as Windows (.NET 6).
 
 ### 🧰 .NET Libraries (for C# code)
 
@@ -302,7 +301,7 @@ and wire its arguments (`Exception`, `Context`, `StatusCode`, `ResponseBody`, `E
 
 | Issue | Cause | Fix |
 |--------|--------|-----|
-| Missing activities | UiPath.System or UiPath.WebAPI not installed | Install packages via Manage Packages |
+| Missing activities | UiPath.System.Activities not installed | Install package via Manage Packages |
 | Workflow opens as "Windows" type | Project compatibility not set to Legacy | Set Compatibility = Windows-Legacy |
 | JWT fails to generate | Incorrect PEM format or invalid JSON path | Verify `JWT-Config.json` and PEM file format |
 | Configuration not loading | Missing required fields in JSON | Ensure all required fields are present in config |
@@ -314,7 +313,7 @@ and wire its arguments (`Exception`, `Context`, `StatusCode`, `ResponseBody`, `E
 ## ✅ Summary
 
 - Compatible with **Windows-Legacy** UiPath projects  
-- Requires only `UiPath.System.Activities` and `UiPath.WebAPI.Activities`  
+- Requires only `UiPath.System.Activities`  
 - Supports both **DLL invocation** and **inline Invoke Code** methods  
 - Fully configurable via JSON and PEM files  
 - Prebuilt example XAMLs included for fast setup  

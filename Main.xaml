@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Activity xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" x:Class="SalesforceJWT.Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+<Activity x:Class="SalesforceJWT.Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Salesforce JWT Authentication">
     <!-- Variables -->
     <Variable x:TypeArguments="x:String" Name="ClientId" />
@@ -14,7 +14,7 @@
     <Variable x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" />
     <Variable x:TypeArguments="x:String" Name="AccessToken" />
     <Variable x:TypeArguments="x:String" Name="InstanceUrl" />
-    <Variable x:TypeArguments="x:DateTime" Name="TokenExpiry" />
+    <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" />
     <Variable x:TypeArguments="x:Boolean" Name="IsValid" />
     <Variable x:TypeArguments="x:String" Name="ErrorMessage" />
     
@@ -43,7 +43,7 @@
         <Argument x:TypeArguments="x:String" Name="PrivateKeyPath" Value="[PrivateKeyPath]" />
         <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
         <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
-        <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
+        <Argument x:TypeArguments="s:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
       </Arguments>
     </ui:InvokeWorkflowFile>
     
@@ -67,19 +67,18 @@
       </If.Then>
       <If.Else>
         <ui:LogMessage DisplayName="Authentication Failed" Level="Error" Message="[&quot;Salesforce JWT Authentication failed: &quot; + ErrorMessage]" />
-        <Throw DisplayName="Throw Authentication Error">
-          <Throw.Exception>
-            <InArgument x:TypeArguments="x:Exception">[New Exception(ErrorMessage)]</InArgument>
-          </Throw.Exception>
-        </Throw>
+        <ui:LogMessage DisplayName="Stopping Workflow" Level="Error" Message="Workflow stopped due to authentication failure" />
       </If.Else>
     </If>
     
-    <!-- Return Results -->
-    <Return DisplayName="Return Authentication Results">
-      <Return.Value>
+    <!-- Set Output Variables -->
+    <Assign DisplayName="Set Output Variables">
+      <Assign.To>
         <OutArgument x:TypeArguments="x:String">[AccessToken]</OutArgument>
-      </Return.Value>
-    </Return>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[AccessToken]</InArgument>
+      </Assign.Value>
+    </Assign>
   </Sequence>
 </Activity>

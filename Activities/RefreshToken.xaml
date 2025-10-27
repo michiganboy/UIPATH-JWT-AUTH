@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Activity xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" x:Class="SalesforceJWT.RefreshToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+<Activity x:Class="SalesforceJWT.RefreshToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Refresh Token">
     <!-- Input Arguments -->
     <Variable x:TypeArguments="x:String" Name="ClientId" Direction="In" />
     <Variable x:TypeArguments="x:String" Name="Username" Direction="In" />
     <Variable x:TypeArguments="x:String" Name="LoginUrl" Direction="In" />
     <Variable x:TypeArguments="x:String" Name="PrivateKeyPath" Direction="In" />
-    <Variable x:TypeArguments="x:DateTime" Name="TokenExpiry" Direction="In" />
+    <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" Direction="In" />
     
     <!-- Output Arguments -->
     <Variable x:TypeArguments="x:Boolean" Name="IsRefreshed" Direction="Out" />
     <Variable x:TypeArguments="x:String" Name="NewToken" Direction="Out" />
     <Variable x:TypeArguments="x:String" Name="NewInstanceUrl" Direction="Out" />
-    <Variable x:TypeArguments="x:DateTime" Name="NewExpiry" Direction="Out" />
+    <Variable x:TypeArguments="s:DateTime" Name="NewExpiry" Direction="Out" />
     
     <!-- Variables -->
     <Variable x:TypeArguments="x:Boolean" Name="TokenNeedsRefresh" />

@@ -1,0 +1,26 @@
+{
+  "name": "SalesforceJWT",
+  "description": "Salesforce JWT Authentication for UiPath Windows-Legacy",
+  "main": "Main.xaml",
+  "projectType": "Workflow",
+  "projectProfile": "WindowsLegacy",
+  "projectVersion": "1.0.0",
+  "dependencies": {
+    "UiPath.System.Activities": "24.10.3"
+  },
+  "designOptions": {
+    "projectProfile": "WindowsLegacy",
+    "outputType": "Library",
+    "libraryOptions": {
+      "includeOriginalXaml": false,
+      "privateWorkflows": []
+    },
+    "processOptions": {
+      "ignoredFiles": []
+    },
+    "fileInfoCollection": [],
+    "modernBehavior": false
+  },
+  "expressionLanguage": "VB",
+  "executionType": "Workflow"
+}

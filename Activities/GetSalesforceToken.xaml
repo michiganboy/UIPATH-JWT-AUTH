@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Activity xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" x:Class="SalesforceJWT.GetSalesforceToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+<Activity x:Class="SalesforceJWT.GetSalesforceToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Get Salesforce Token">
     <!-- Input Arguments -->
     <Variable x:TypeArguments="x:String" Name="ClientId" Direction="In" />
@@ -10,7 +10,7 @@
     <!-- Output Arguments -->
     <Variable x:TypeArguments="x:String" Name="AccessToken" Direction="Out" />
     <Variable x:TypeArguments="x:String" Name="InstanceUrl" Direction="Out" />
-    <Variable x:TypeArguments="x:DateTime" Name="TokenExpiry" Direction="Out" />
+    <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" Direction="Out" />
     
     <!-- Variables -->
     <Variable x:TypeArguments="x:String" Name="PrivateKey" />
@@ -83,7 +83,7 @@
       <Catch>
         <ui:InvokeWorkflowFile DisplayName="Handle Error" WorkflowFileName="Activities\HandleError.xaml">
           <Arguments>
-            <Argument x:TypeArguments="x:Exception" Name="Exception" Value="[Exception]" />
+            <Argument x:TypeArguments="s:Exception" Name="Exception" Value="[Exception]" />
             <Argument x:TypeArguments="x:String" Name="Context" Value="[&quot;JWT Token Exchange&quot;]" />
             <Argument x:TypeArguments="x:Int32" Name="StatusCode" Value="[0]" />
             <Argument x:TypeArguments="x:String" Name="ResponseBody" Value="[&quot;&quot;]" />
@@ -135,10 +135,10 @@
         <!-- Calculate Token Expiry -->
         <Assign DisplayName="Calculate Token Expiry">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:DateTime">[TokenExpiry]</OutArgument>
+            <OutArgument x:TypeArguments="s:DateTime">[TokenExpiry]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:DateTime">[DateTime.Now.AddSeconds(CType(TokenResponse, SalesforceJWT.TokenResponse).expires_in)]</InArgument>
+            <InArgument x:TypeArguments="s:DateTime">[DateTime.Now.AddSeconds(CType(TokenResponse, SalesforceJWT.TokenResponse).expires_in)]</InArgument>
           </Assign.Value>
         </Assign>
         
@@ -147,7 +147,7 @@
       <If.Else>
         <ui:InvokeWorkflowFile DisplayName="Handle HTTP Error" WorkflowFileName="Activities\HandleError.xaml">
           <Arguments>
-            <Argument x:TypeArguments="x:Exception" Name="Exception" Value="[New Exception("HTTP Error")]" />
+            <Argument x:TypeArguments="s:Exception" Name="Exception" Value="[New Exception("HTTP Error")]" />
             <Argument x:TypeArguments="x:String" Name="Context" Value="[&quot;JWT Token Exchange&quot;]" />
             <Argument x:TypeArguments="x:Int32" Name="StatusCode" Value="[StatusCode]" />
             <Argument x:TypeArguments="x:String" Name="ResponseBody" Value="[ResponseBody]" />
