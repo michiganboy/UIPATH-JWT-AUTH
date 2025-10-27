@@ -41,20 +41,18 @@ UiPath-JWT-Auth/
 │   ├── GetSalesforceToken.xaml
 │   ├── RefreshToken.xaml
 │   ├── ValidateToken.xaml
-│   ├── ErrorHandling.xaml
+│   ├── LoadConfiguration.xaml
+│   └── HandleError.xaml
 ├── Code/
 │   ├── JWTGenerator.cs
 │   ├── TokenParser.cs
 ├── Config/
 │   ├── JWT-Config.json
 │   └── Certificate.pem.example
-├── Examples/
-│   ├── BasicUsage.xaml
-│   ├── AdvancedUsage.xaml
-│   ├── MigrationExample.xaml
-│   ├── ProductionExample.xaml
-└── Integration/
-    └── ReplaceSOAPAuth.xaml
+└── Examples/
+    ├── BasicUsage.xaml
+    ├── AdvancedUsage.xaml
+    └── MigrationExample.xaml
 ```
 
 ---
@@ -68,23 +66,24 @@ UiPath-JWT-Auth/
                              │
                              ▼
              ┌───────────────────────────────┐
+             │   LoadConfiguration.xaml     │
+             └────────────┬──────────────────┘
+                          │
+                          ▼
+             ┌───────────────────────────────┐
              │   GetSalesforceToken.xaml     │
              └────────────┬──────────────────┘
                           │
-          ┌───────────────┼──────────────────────────────┐
-          │               │                              │
-          ▼               ▼                              ▼
- ┌────────────────┐ ┌────────────────┐          ┌────────────────┐
- │ ValidateToken  │ │ RefreshToken   │          │ ErrorHandling  │
- │ .xaml          │ │ .xaml          │          │ .xaml          │
- └──────┬─────────┘ └──────┬─────────┘          └───────┬────────┘
-        │                  │                            │
-        └──────────┬───────┘                            │
-                   ▼                                    │
-          ┌────────────────────┐                        │
-          │ ProductionExample  │<───────────────────────┘
-          │ .xaml              │
-          └────────────────────┘
+                          ▼
+             ┌───────────────────────────────┐
+             │   ValidateToken.xaml          │
+             └───────────────────────────────┘
+                          │
+                          ▼
+             ┌───────────────────────────────┐
+             │   HandleError.xaml            │
+             │   (invoked on errors)         │
+             └───────────────────────────────┘
 ```
 
 ---
@@ -107,7 +106,7 @@ These are used in the C# helper files for JWT generation and parsing:
 
 - `System.IdentityModel.Tokens.Jwt`
 - `Microsoft.IdentityModel.Tokens`
-- `System.Text.Json`
+- `Newtonsoft.Json`
 - `System.Security.Cryptography`
 
 ---
@@ -134,12 +133,45 @@ Config/
     "Username": "YOUR_SALESFORCE_USERNAME",
     "PrivateKeyPath": "Config/Certificate.pem",
     "TokenEndpoint": "/services/oauth2/token"
+  },
+  "Token": {
+    "ExpiryBuffer": 300,
+    "MaxRetries": 3,
+    "RetryDelay": 5000
+  },
+  "Logging": {
+    "Level": "Info",
+    "EnableDetailedLogging": true
   }
 }
 ```
 
 > The `.pem` file contains the private key that signs your JWT.  
-> Make sure the path matches exactly what’s defined in your JSON file.
+> Make sure the path matches exactly what's defined in your JSON file.
+
+### Configuration Sections
+
+| Section | Purpose | Required |
+|---------|---------|----------|
+| **Salesforce** | Core authentication settings | ✅ Yes |
+| **Token** | Token management and retry settings | ❌ Optional |
+| **Logging** | Logging configuration | ❌ Optional |
+
+#### Salesforce Section
+- `LoginUrl`: Salesforce login URL (production or sandbox)
+- `ClientId`: Connected App Client ID from Salesforce
+- `Username`: Salesforce username for JWT assertion
+- `PrivateKeyPath`: Path to PEM certificate file
+- `TokenEndpoint`: OAuth2 token endpoint (usually `/services/oauth2/token`)
+
+#### Token Section (Optional)
+- `ExpiryBuffer`: Seconds before expiry to consider token invalid (default: 300)
+- `MaxRetries`: Maximum retry attempts for failed requests (default: 3)
+- `RetryDelay`: Delay between retries in milliseconds (default: 5000)
+
+#### Logging Section (Optional)
+- `Level`: Log level (Info, Debug, Error, etc.)
+- `EnableDetailedLogging`: Enable detailed exception logging (default: true)
 
 ---
 
@@ -156,11 +188,12 @@ Drop your `.pem` and `JWT-Config.json` into the `Config` folder.
 ### Step 3: Run
 Open and run `Examples/BasicUsage.xaml`.  
 This workflow will:
-1. Read the config file  
-2. Load the private key  
-3. Generate the JWT  
-4. Request a Salesforce access token  
-5. Log and return the response
+1. Load configuration from `JWT-Config.json`  
+2. Read the private key from PEM file  
+3. Generate the JWT using RSA signing  
+4. Exchange JWT for Salesforce access token  
+5. Validate the token  
+6. Log results and handle any errors
 
 ---
 
@@ -172,10 +205,9 @@ This workflow will:
 | **AdvancedUsage.xaml** | Adds retry logic, configurable delays, and enhanced logging. | ② |
 | **RefreshToken.xaml** | Refreshes expired Salesforce access tokens. | ③ |
 | **ValidateToken.xaml** | Validates tokens before API calls. | ④ |
-| **ErrorHandling.xaml** | Centralized reusable workflow for catching, logging, and rethrowing authentication and HTTP errors. Invoked by other workflows. | 🔁 |
-| **ProductionExample.xaml** | End-to-end orchestration combining validation, refresh, and error handling. | ⑤ |
+| **LoadConfiguration.xaml** | Loads and validates configuration from JSON file. | 🔁 |
+| **HandleError.xaml** | Centralized reusable workflow for catching, logging, and rethrowing authentication and HTTP errors. | 🔁 |
 | **MigrationExample.xaml** | Demonstrates replacing SOAP-based login with JWT. | Optional |
-| **ReplaceSOAPAuth.xaml** | Legacy reference (commented-out SOAP example). | — |
 
 ---
 
@@ -191,7 +223,7 @@ You can build a DLL and call its methods from UiPath using an **Invoke Method** 
 ```bash
 mkdir SalesforceJWT
 cd SalesforceJWT
-dotnet new classlib -f net461 -n SalesforceJWT
+dotnet new classlib -f netstandard2.0 -n SalesforceJWT
 cd SalesforceJWT
 ```
 
@@ -208,7 +240,7 @@ Replace contents of `SalesforceJWT.csproj` with:
   <ItemGroup>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.34.0" />
-    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>
 ```
@@ -248,19 +280,19 @@ Steps:
 
 ## ⚠️ Error Handling Integration
 
-`ErrorHandling.xaml` is now located under `Activities/` and acts as a shared workflow to catch and manage runtime exceptions.
+`HandleError.xaml` is located under `Activities/` and acts as a shared workflow to catch and manage runtime exceptions.
 
-- Automatically invoked by `ProductionExample.xaml` and `AdvancedUsage.xaml`.
+- Automatically invoked by `Main.xaml` and `GetSalesforceToken.xaml`.
 - Handles network issues, authentication failures, and bad HTTP responses.
 - Logs all exceptions using `Log Message` and throws them back to the parent for controlled handling.
 
 If you create new workflows that perform Salesforce API calls, invoke it via:
 
 ```
-Activities/ErrorHandling.xaml
+Activities/HandleError.xaml
 ```
 
-and wire its arguments (`AccessToken`, `StatusCode`, `ErrorMessage`, etc.) accordingly.
+and wire its arguments (`Exception`, `Context`, `StatusCode`, `ResponseBody`, `EnableDetailedLogging`) accordingly.
 
 ---
 
@@ -269,8 +301,10 @@ and wire its arguments (`AccessToken`, `StatusCode`, `ErrorMessage`, etc.) accor
 | Issue | Cause | Fix |
 |--------|--------|-----|
 | Missing activities | UiPath.System or UiPath.WebAPI not installed | Install packages via Manage Packages |
-| Workflow opens as “Windows” type | Project compatibility not set to Legacy | Set Compatibility = Windows-Legacy |
-| JWT fails to generate | Incorrect PEM or invalid JSON path | Verify `JWT-Config.json` and file names |
+| Workflow opens as "Windows" type | Project compatibility not set to Legacy | Set Compatibility = Windows-Legacy |
+| JWT fails to generate | Incorrect PEM format or invalid JSON path | Verify `JWT-Config.json` and PEM file format |
+| Configuration not loading | Missing required fields in JSON | Ensure all required fields are present in config |
+| Token validation fails | Invalid token or expired credentials | Check token expiry and Salesforce credentials |
 | Missing DLL reference | File not in project path | Add DLL manually and rebuild dependencies |
 
 ---
@@ -282,7 +316,8 @@ and wire its arguments (`AccessToken`, `StatusCode`, `ErrorMessage`, etc.) accor
 - Supports both **DLL invocation** and **inline Invoke Code** methods  
 - Fully configurable via JSON and PEM files  
 - Prebuilt example XAMLs included for fast setup  
-- Includes centralized, reusable **ErrorHandling.xaml** workflow
+- Includes centralized, reusable **HandleError.xaml** workflow
+- Built-in configuration loading with **LoadConfiguration.xaml**
 
 ---
 

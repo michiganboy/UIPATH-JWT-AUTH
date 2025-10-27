@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Activity xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" x:Class="SalesforceJWT.LoadConfiguration" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+  <Sequence DisplayName="Load Configuration">
+    <!-- Variables -->
+    <Variable x:TypeArguments="x:String" Name="ConfigFilePath" Default="Config/JWT-Config.json" />
+    <Variable x:TypeArguments="x:String" Name="ConfigContent" />
+    <Variable x:TypeArguments="x:Object" Name="ConfigObject" />
+    
+    <!-- Arguments -->
+    <Variable x:TypeArguments="x:String" Name="ClientId" Direction="Out" />
+    <Variable x:TypeArguments="x:String" Name="Username" Direction="Out" />
+    <Variable x:TypeArguments="x:String" Name="LoginUrl" Direction="Out" />
+    <Variable x:TypeArguments="x:String" Name="PrivateKeyPath" Direction="Out" />
+    <Variable x:TypeArguments="x:String" Name="TokenEndpoint" Direction="Out" />
+    <Variable x:TypeArguments="x:Int32" Name="ExpiryBuffer" Direction="Out" />
+    <Variable x:TypeArguments="x:Int32" Name="MaxRetries" Direction="Out" />
+    <Variable x:TypeArguments="x:Int32" Name="RetryDelay" Direction="Out" />
+    <Variable x:TypeArguments="x:String" Name="LogLevel" Direction="Out" />
+    <Variable x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Direction="Out" />
+    
+    <!-- Read Configuration File -->
+    <ui:LogMessage DisplayName="Loading Configuration" Level="Info" Message="[&quot;Loading configuration from: &quot; + ConfigFilePath]" />
+    
+    <ui:ReadTextFile DisplayName="Read Config File" FileName="[ConfigFilePath]" Text="[ConfigContent]" />
+    
+    <!-- Parse JSON Configuration -->
+    <ui:DeserializeJson DisplayName="Parse JSON Config" JsonString="[ConfigContent]" JsonObject="[ConfigObject]" />
+    
+    <!-- Extract Salesforce Configuration -->
+    <Assign DisplayName="Extract Client ID">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[ClientId]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[ConfigObject("Salesforce")("ClientId")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Extract Username">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[Username]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[ConfigObject("Salesforce")("Username")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Extract Login URL">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[LoginUrl]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[ConfigObject("Salesforce")("LoginUrl")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Extract Private Key Path">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[PrivateKeyPath]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[ConfigObject("Salesforce")("PrivateKeyPath")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Extract Token Endpoint">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[TokenEndpoint]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[ConfigObject("Salesforce")("TokenEndpoint")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Extract Token Configuration -->
+    <Assign DisplayName="Extract Expiry Buffer">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[ExpiryBuffer]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[ConfigObject("Token")("ExpiryBuffer")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Extract Max Retries">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[MaxRetries]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[ConfigObject("Token")("MaxRetries")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Extract Retry Delay">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[RetryDelay]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[ConfigObject("Token")("RetryDelay")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Extract Logging Configuration -->
+    <Assign DisplayName="Extract Log Level">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[LogLevel]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[ConfigObject("Logging")("Level")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <Assign DisplayName="Extract Detailed Logging">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[EnableDetailedLogging]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[ConfigObject("Logging")("EnableDetailedLogging")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    
+    <!-- Validate Required Configuration -->
+    <If DisplayName="Validate Client ID">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[String.IsNullOrEmpty(ClientId)]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <ui:LogMessage DisplayName="Missing Client ID" Level="Error" Message="ClientId is required in configuration" />
+        <Throw DisplayName="Throw Configuration Error">
+          <Throw.Exception>
+            <InArgument x:TypeArguments="x:Exception">[New Exception("ClientId is required in configuration")]</InArgument>
+          </Throw.Exception>
+        </Throw>
+      </If.Then>
+    </If>
+    
+    <If DisplayName="Validate Username">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[String.IsNullOrEmpty(Username)]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <ui:LogMessage DisplayName="Missing Username" Level="Error" Message="Username is required in configuration" />
+        <Throw DisplayName="Throw Configuration Error">
+          <Throw.Exception>
+            <InArgument x:TypeArguments="x:Exception">[New Exception("Username is required in configuration")]</InArgument>
+          </Throw.Exception>
+        </Throw>
+      </If.Then>
+    </If>
+    
+    <If DisplayName="Validate Login URL">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[String.IsNullOrEmpty(LoginUrl)]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <ui:LogMessage DisplayName="Missing Login URL" Level="Error" Message="LoginUrl is required in configuration" />
+        <Throw DisplayName="Throw Configuration Error">
+          <Throw.Exception>
+            <InArgument x:TypeArguments="x:Exception">[New Exception("LoginUrl is required in configuration")]</InArgument>
+          </Throw.Exception>
+        </Throw>
+      </If.Then>
+    </If>
+    
+    <If DisplayName="Validate Private Key Path">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[String.IsNullOrEmpty(PrivateKeyPath)]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <ui:LogMessage DisplayName="Missing Private Key Path" Level="Error" Message="PrivateKeyPath is required in configuration" />
+        <Throw DisplayName="Throw Configuration Error">
+          <Throw.Exception>
+            <InArgument x:TypeArguments="x:Exception">[New Exception("PrivateKeyPath is required in configuration")]</InArgument>
+          </Throw.Exception>
+        </Throw>
+      </If.Then>
+    </If>
+    
+    <!-- Log Success -->
+    <ui:LogMessage DisplayName="Configuration Loaded" Level="Info" Message="Configuration loaded successfully" />
+  </Sequence>
+</Activity>

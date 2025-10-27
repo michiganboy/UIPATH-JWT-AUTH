@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Activity xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" x:Class="SalesforceJWT.HandleError" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
+  <Sequence DisplayName="Handle Error">
+    <!-- Arguments -->
+    <Variable x:TypeArguments="x:Exception" Name="Exception" Direction="In" />
+    <Variable x:TypeArguments="x:String" Name="Context" Direction="In" />
+    <Variable x:TypeArguments="x:Int32" Name="StatusCode" Direction="In" />
+    <Variable x:TypeArguments="x:String" Name="ResponseBody" Direction="In" />
+    <Variable x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Direction="In" />
+    
+    <!-- Variables -->
+    <Variable x:TypeArguments="x:String" Name="ErrorMessage" />
+    <Variable x:TypeArguments="x:String" Name="ErrorType" />
+    
+    <!-- Determine Error Type -->
+    <If DisplayName="Check if HTTP Error">
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">[StatusCode > 0]</InArgument>
+      </If.Condition>
+      <If.Then>
+        <Assign DisplayName="Set HTTP Error Type">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[ErrorType]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["HTTP_" + StatusCode.ToString()]</InArgument>
+          </Assign.Value>
+        </Assign>
+        
+        <!-- Handle specific HTTP status codes -->
+        <If DisplayName="Handle 401 Unauthorized">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">[StatusCode = 401]</InArgument>
+          </If.Condition>
+          <If.Then>
+            <ui:LogMessage DisplayName="401 Unauthorized" Level="Error" Message="[Context + &quot;: 401 Unauthorized - Token may be expired or invalid&quot;]" />
+            <Assign DisplayName="Set 401 Error Message">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">["401 Unauthorized - Token may be expired or invalid"]</InArgument>
+              </Assign.Value>
+            </Assign>
+          </If.Then>
+          <If.Else>
+            <If DisplayName="Handle 403 Forbidden">
+              <If.Condition>
+                <InArgument x:TypeArguments="x:Boolean">[StatusCode = 403]</InArgument>
+              </If.Condition>
+              <If.Then>
+                <ui:LogMessage DisplayName="403 Forbidden" Level="Error" Message="[Context + &quot;: 403 Forbidden - Insufficient permissions&quot;]" />
+                <Assign DisplayName="Set 403 Error Message">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">["403 Forbidden - Insufficient permissions"]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Then>
+              <If.Else>
+                <If DisplayName="Handle 500 Server Error">
+                  <If.Condition>
+                    <InArgument x:TypeArguments="x:Boolean">[StatusCode >= 500]</InArgument>
+                  </If.Condition>
+                  <If.Then>
+                    <ui:LogMessage DisplayName="Server Error" Level="Error" Message="[Context + &quot;: Server error - Status code &quot; + StatusCode.ToString()]" />
+                    <Assign DisplayName="Set Server Error Message">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">["Server error - Status code " + StatusCode.ToString()]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                  </If.Then>
+                  <If.Else>
+                    <ui:LogMessage DisplayName="Other HTTP Error" Level="Error" Message="[Context + &quot;: HTTP error - Status code &quot; + StatusCode.ToString()]" />
+                    <Assign DisplayName="Set Other HTTP Error Message">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">["HTTP error - Status code " + StatusCode.ToString()]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                  </If.Else>
+                </If>
+              </If.Else>
+            </If>
+          </If.Else>
+        </If>
+        
+        <!-- Log response body if detailed logging is enabled -->
+        <If DisplayName="Log Response Body">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">[EnableDetailedLogging AndAlso Not String.IsNullOrEmpty(ResponseBody)]</InArgument>
+          </If.Condition>
+          <If.Then>
+            <ui:LogMessage DisplayName="Response Body" Level="Error" Message="[&quot;Response body: &quot; + ResponseBody]" />
+          </If.Then>
+        </If>
+      </If.Then>
+      <If.Else>
+        <!-- Handle Exception -->
+        <Assign DisplayName="Set Exception Error Type">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[ErrorType]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["EXCEPTION"]</InArgument>
+          </Assign.Value>
+        </Assign>
+        
+        <!-- Log exception -->
+        <ui:LogMessage DisplayName="Exception Occurred" Level="Error" Message="[Context + &quot;: Exception occurred - &quot; + Exception.Message]" />
+        
+        <!-- Handle specific exception types -->
+        <If DisplayName="Check for Timeout Exception">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">[Exception.Message.ToLower().Contains("timeout")]</InArgument>
+          </If.Condition>
+          <If.Then>
+            <ui:LogMessage DisplayName="Timeout Exception" Level="Error" Message="[Context + &quot;: Timeout exception detected - network or server issue&quot;]" />
+            <Assign DisplayName="Set Timeout Error Message">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">["Timeout exception - network or server issue"]</InArgument>
+              </Assign.Value>
+            </Assign>
+          </If.Then>
+          <If.Else>
+            <If DisplayName="Check for Network Exception">
+              <If.Condition>
+                <InArgument x:TypeArguments="x:Boolean">[Exception.Message.ToLower().Contains("network") OrElse Exception.Message.ToLower().Contains("connection")]</InArgument>
+              </If.Condition>
+              <If.Then>
+                <ui:LogMessage DisplayName="Network Exception" Level="Error" Message="[Context + &quot;: Network exception detected - connectivity issue&quot;]" />
+                <Assign DisplayName="Set Network Error Message">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">["Network exception - connectivity issue"]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Then>
+              <If.Else>
+                <If DisplayName="Check for Authentication Exception">
+                  <If.Condition>
+                    <InArgument x:TypeArguments="x:Boolean">[Exception.Message.ToLower().Contains("authentication") OrElse Exception.Message.ToLower().Contains("unauthorized")]</InArgument>
+                  </If.Condition>
+                  <If.Then>
+                    <ui:LogMessage DisplayName="Authentication Exception" Level="Error" Message="[Context + &quot;: Authentication exception detected&quot;]" />
+                    <Assign DisplayName="Set Authentication Error Message">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">["Authentication exception"]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                  </If.Then>
+                  <If.Else>
+                    <ui:LogMessage DisplayName="General Exception" Level="Error" Message="[Context + &quot;: General exception&quot;]" />
+                    <Assign DisplayName="Set General Error Message">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">["General exception: " + Exception.Message]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                  </If.Else>
+                </If>
+              </If.Else>
+            </If>
+          </If.Else>
+        </If>
+        
+        <!-- Log detailed exception if enabled -->
+        <If DisplayName="Log Detailed Exception">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">[EnableDetailedLogging]</InArgument>
+          </If.Condition>
+          <If.Then>
+            <ui:LogMessage DisplayName="Exception Details" Level="Error" Message="[&quot;Exception details: &quot; + Exception.ToString()]" />
+          </If.Then>
+        </If>
+      </If.Else>
+    </If>
+    
+    <!-- Throw the error -->
+    <Throw DisplayName="Throw Error">
+      <Throw.Exception>
+        <InArgument x:TypeArguments="x:Exception">[New Exception(Context + ": " + ErrorMessage, Exception)]</InArgument>
+      </Throw.Exception>
+    </Throw>
+  </Sequence>
+</Activity>

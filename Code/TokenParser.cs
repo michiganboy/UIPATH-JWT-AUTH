@@ -1,5 +1,5 @@
 using System;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace SalesforceJWT
 {
@@ -20,19 +20,45 @@ namespace SalesforceJWT
         {
             try
             {
-                var options = new JsonSerializerOptions
+                if (string.IsNullOrEmpty(responseBody))
                 {
-                    PropertyNameCaseInsensitive = true
+                    throw new ArgumentException("Response body cannot be null or empty", nameof(responseBody));
+                }
+                
+                // Validate JSON format
+                if (!responseBody.Trim().StartsWith("{") || !responseBody.Trim().EndsWith("}"))
+                {
+                    throw new ArgumentException("Response body must be valid JSON", nameof(responseBody));
+                }
+                
+                var options = new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
                 };
                 
-                var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody, options);
+                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(responseBody, options);
                 
                 if (tokenResponse == null)
                 {
-                    throw new Exception("Failed to parse token response");
+                    throw new Exception("Failed to parse token response - deserialization returned null");
+                }
+                
+                // Validate required fields
+                if (string.IsNullOrEmpty(tokenResponse.access_token))
+                {
+                    throw new Exception("Token response is missing required 'access_token' field");
+                }
+                
+                if (string.IsNullOrEmpty(tokenResponse.instance_url))
+                {
+                    throw new Exception("Token response is missing required 'instance_url' field");
                 }
                 
                 return tokenResponse;
+            }
+            catch (JsonException jsonEx)
+            {
+                throw new Exception($"Failed to parse token response - invalid JSON: {jsonEx.Message}", jsonEx);
             }
             catch (Exception ex)
             {
