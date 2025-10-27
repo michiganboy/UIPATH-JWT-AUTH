@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity x:Class="SalesforceJWT.RefreshToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <!-- Arguments -->
-  <InArgument x:TypeArguments="x:String" x:Key="ClientId" />
-  <InArgument x:TypeArguments="x:String" x:Key="Username" />
-  <InArgument x:TypeArguments="x:String" x:Key="LoginUrl" />
-  <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath" />
+  <InArgument x:TypeArguments="s:String" x:Key="ClientId" />
+  <InArgument x:TypeArguments="s:String" x:Key="Username" />
+  <InArgument x:TypeArguments="s:String" x:Key="LoginUrl" />
+  <InArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath" />
   <InArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry" />
-  <OutArgument x:TypeArguments="x:Boolean" x:Key="IsRefreshed" />
-  <OutArgument x:TypeArguments="x:String" x:Key="NewToken" />
-  <OutArgument x:TypeArguments="x:String" x:Key="NewInstanceUrl" />
+  <OutArgument x:TypeArguments="s:Boolean" x:Key="IsRefreshed" />
+  <OutArgument x:TypeArguments="s:String" x:Key="NewToken" />
+  <OutArgument x:TypeArguments="s:String" x:Key="NewInstanceUrl" />
   <OutArgument x:TypeArguments="s:DateTime" x:Key="NewExpiry" />
   
   <Sequence DisplayName="Refresh Token">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="x:Boolean" Name="TokenNeedsRefresh" />
-    <Variable x:TypeArguments="x:TimeSpan" Name="TimeUntilExpiry" />
+    <Variable x:TypeArguments="s:Boolean" Name="TokenNeedsRefresh" />
+    <Variable x:TypeArguments="s:TimeSpan" Name="TimeUntilExpiry" />
     
     <!-- Check if token needs refresh -->
     <Assign DisplayName="Calculate Time Until Expiry">
       <Assign.To>
-        <OutArgument x:TypeArguments="x:TimeSpan">[TimeUntilExpiry]</OutArgument>
+        <OutArgument x:TypeArguments="s:TimeSpan">[TimeUntilExpiry]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:TimeSpan">[TokenExpiry - DateTime.Now]</InArgument>
+        <InArgument x:TypeArguments="s:TimeSpan">[TokenExpiry - DateTime.Now]</InArgument>
       </Assign.Value>
     </Assign>
     
     <!-- Check if token expires within buffer time (5 minutes) -->
     <Assign DisplayName="Check if Token Needs Refresh">
       <Assign.To>
-        <OutArgument x:TypeArguments="x:Boolean">[TokenNeedsRefresh]</OutArgument>
+        <OutArgument x:TypeArguments="s:Boolean">[TokenNeedsRefresh]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:Boolean">[TimeUntilExpiry.TotalSeconds &lt; 300]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[TimeUntilExpiry.TotalSeconds &lt; 300]</InArgument>
       </Assign.Value>
     </Assign>
     
     <!-- Refresh token if needed -->
     <If DisplayName="Refresh Token if Needed">
       <If.Condition>
-        <InArgument x:TypeArguments="x:Boolean">[TokenNeedsRefresh]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[TokenNeedsRefresh]</InArgument>
       </If.Condition>
       <If.Then>
         <ui:LogMessage DisplayName="Token Needs Refresh" Level="Info" Message="[&quot;Token expires in &quot; + TimeUntilExpiry.TotalMinutes.ToString("F1") + &quot; minutes. Refreshing...&quot;]" />
@@ -48,12 +48,12 @@
         <!-- Get new token -->
         <ui:InvokeWorkflowFile DisplayName="Get New Token" WorkflowFileName="GetSalesforceToken.xaml">
           <ui:InvokeWorkflowFile.Arguments>
-            <InArgument x:TypeArguments="x:String" x:Key="ClientId">[ClientId]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="Username">[Username]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
-            <OutArgument x:TypeArguments="x:String" x:Key="AccessToken">[NewToken]</OutArgument>
-            <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[NewInstanceUrl]</OutArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="ClientId">[ClientId]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="Username">[Username]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
+            <OutArgument x:TypeArguments="s:String" x:Key="AccessToken">[NewToken]</OutArgument>
+            <OutArgument x:TypeArguments="s:String" x:Key="InstanceUrl">[NewInstanceUrl]</OutArgument>
             <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[NewExpiry]</OutArgument>
           </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
@@ -61,10 +61,10 @@
         <!-- Set refresh results -->
         <Assign DisplayName="Set Refresh Results">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:Boolean">[IsRefreshed]</OutArgument>
+            <OutArgument x:TypeArguments="s:Boolean">[IsRefreshed]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+            <InArgument x:TypeArguments="s:Boolean">[True]</InArgument>
           </Assign.Value>
         </Assign>
         
@@ -76,10 +76,10 @@
         <!-- Set no refresh needed -->
         <Assign DisplayName="Set No Refresh Needed">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:Boolean">[IsRefreshed]</OutArgument>
+            <OutArgument x:TypeArguments="s:Boolean">[IsRefreshed]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+            <InArgument x:TypeArguments="s:Boolean">[False]</InArgument>
           </Assign.Value>
         </Assign>
       </If.Else>

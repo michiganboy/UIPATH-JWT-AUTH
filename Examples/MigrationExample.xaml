@@ -2,19 +2,19 @@
 <Activity x:Class="SalesforceJWT.MigrationExample" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Migration Example: SOAP to JWT">
     <!-- Variables -->
-    <Variable x:TypeArguments="x:String" Name="AccessToken" />
-    <Variable x:TypeArguments="x:String" Name="InstanceUrl" />
+    <Variable x:TypeArguments="s:String" Name="AccessToken" />
+    <Variable x:TypeArguments="s:String" Name="InstanceUrl" />
     <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" />
-    <Variable x:TypeArguments="x:String" Name="APIResponse" />
-    <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
+    <Variable x:TypeArguments="s:String" Name="APIResponse" />
+    <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
     
     <!-- Step 1: JWT Authentication (Replaces SOAP) -->
     <ui:LogMessage DisplayName="JWT Authentication" Level="Info" Message="Using JWT authentication instead of SOAP..." />
     
     <ui:InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
       <ui:InvokeWorkflowFile.Arguments>
-        <OutArgument x:TypeArguments="x:String" x:Key="AccessToken">[AccessToken]</OutArgument>
-        <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[InstanceUrl]</OutArgument>
+        <OutArgument x:TypeArguments="s:String" x:Key="AccessToken">[AccessToken]</OutArgument>
+        <OutArgument x:TypeArguments="s:String" x:Key="InstanceUrl">[InstanceUrl]</OutArgument>
         <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[TokenExpiry]</OutArgument>
       </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
@@ -37,23 +37,23 @@
     <!-- AFTER: JWT Headers -->
     <ui:HttpRequest DisplayName="Get Account Describe with JWT" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
       <ui:HttpRequest.Headers>
-        <scg:Dictionary x:TypeArguments="x:String, x:String">
+        <scg:Dictionary x:TypeArguments="s:String, s:String">
           <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
           <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
         </scg:Dictionary>
       </ui:HttpRequest.Headers>
       <ui:HttpRequest.Result>
-        <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
+        <OutArgument x:TypeArguments="s:String">[APIResponse]</OutArgument>
       </ui:HttpRequest.Result>
       <ui:HttpRequest.StatusCode>
-        <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+        <OutArgument x:TypeArguments="s:Int32">[StatusCode]</OutArgument>
       </ui:HttpRequest.StatusCode>
     </ui:HttpRequest>
     
     <!-- Step 3: Handle Response -->
     <If DisplayName="Check API Response">
       <If.Condition>
-        <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[StatusCode = 200]</InArgument>
       </If.Condition>
       <If.Then>
         <ui:LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully with JWT authentication!" />
@@ -70,22 +70,22 @@
     
     <ui:HttpRequest DisplayName="Get User Info with JWT" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/User/describe']">
       <ui:HttpRequest.Headers>
-        <scg:Dictionary x:TypeArguments="x:String, x:String">
+        <scg:Dictionary x:TypeArguments="s:String, s:String">
           <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
           <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
         </scg:Dictionary>
       </ui:HttpRequest.Headers>
       <ui:HttpRequest.Result>
-        <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
+        <OutArgument x:TypeArguments="s:String">[APIResponse]</OutArgument>
       </ui:HttpRequest.Result>
       <ui:HttpRequest.StatusCode>
-        <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+        <OutArgument x:TypeArguments="s:Int32">[StatusCode]</OutArgument>
       </ui:HttpRequest.StatusCode>
     </ui:HttpRequest>
     
     <If DisplayName="Check Additional API Response">
       <If.Condition>
-        <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[StatusCode = 200]</InArgument>
       </If.Condition>
       <If.Then>
         <ui:LogMessage DisplayName="Additional API Call Successful" Level="Info" Message="Additional API call completed successfully!" />

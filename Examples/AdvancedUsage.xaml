@@ -2,33 +2,33 @@
 <Activity x:Class="SalesforceJWT.AdvancedUsage" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Advanced JWT Usage Example">
     <!-- Variables -->
-    <Variable x:TypeArguments="x:String" Name="AccessToken" />
-    <Variable x:TypeArguments="x:String" Name="InstanceUrl" />
+    <Variable x:TypeArguments="s:String" Name="AccessToken" />
+    <Variable x:TypeArguments="s:String" Name="InstanceUrl" />
     <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" />
-    <Variable x:TypeArguments="x:Boolean" Name="IsRefreshed" />
-    <Variable x:TypeArguments="x:String" Name="NewToken" />
+    <Variable x:TypeArguments="s:Boolean" Name="IsRefreshed" />
+    <Variable x:TypeArguments="s:String" Name="NewToken" />
     <Variable x:TypeArguments="s:DateTime" Name="NewExpiry" />
-    <Variable x:TypeArguments="x:String" Name="APIResponse" />
-    <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
-    <Variable x:TypeArguments="x:Int32" Name="RetryCount" />
-    <Variable x:TypeArguments="x:Int32" Name="MaxRetries" />
+    <Variable x:TypeArguments="s:String" Name="APIResponse" />
+    <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
+    <Variable x:TypeArguments="s:Int32" Name="RetryCount" />
+    <Variable x:TypeArguments="s:Int32" Name="MaxRetries" />
     
     <!-- Initialize Variables -->
     <Assign DisplayName="Initialize Retry Variables">
       <Assign.To>
-        <OutArgument x:TypeArguments="x:Int32">[RetryCount]</OutArgument>
+        <OutArgument x:TypeArguments="s:Int32">[RetryCount]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+        <InArgument x:TypeArguments="s:Int32">[0]</InArgument>
       </Assign.Value>
     </Assign>
     
     <Assign DisplayName="Set Max Retries">
       <Assign.To>
-        <OutArgument x:TypeArguments="x:Int32">[MaxRetries]</OutArgument>
+        <OutArgument x:TypeArguments="s:Int32">[MaxRetries]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:Int32">[3]</InArgument>
+        <InArgument x:TypeArguments="s:Int32">[3]</InArgument>
       </Assign.Value>
     </Assign>
     
@@ -39,8 +39,8 @@
       <Try>
         <ui:InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
           <ui:InvokeWorkflowFile.Arguments>
-            <OutArgument x:TypeArguments="x:String" x:Key="AccessToken">[AccessToken]</OutArgument>
-            <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[InstanceUrl]</OutArgument>
+            <OutArgument x:TypeArguments="s:String" x:Key="AccessToken">[AccessToken]</OutArgument>
+            <OutArgument x:TypeArguments="s:String" x:Key="InstanceUrl">[InstanceUrl]</OutArgument>
             <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[TokenExpiry]</OutArgument>
           </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
@@ -51,7 +51,7 @@
         <ui:LogMessage DisplayName="Initial Token Failed" Level="Error" Message="[&quot;Failed to get initial token: &quot; + Exception.Message]" />
         <Throw DisplayName="Throw Initial Token Error">
           <Throw.Exception>
-            <InArgument x:TypeArguments="x:Exception">[New Exception("Failed to get initial token: " + Exception.Message)]</InArgument>
+            <InArgument x:TypeArguments="s:Exception">[New Exception("Failed to get initial token: " + Exception.Message)]</InArgument>
           </Throw.Exception>
         </Throw>
       </Catch>
@@ -62,13 +62,13 @@
     
     <ui:InvokeWorkflowFile DisplayName="Check Token Refresh" WorkflowFileName="Activities\RefreshToken.xaml">
       <ui:InvokeWorkflowFile.Arguments>
-        <InArgument x:TypeArguments="x:String" x:Key="ClientId">[ClientId]</InArgument>
-        <InArgument x:TypeArguments="x:String" x:Key="Username">[Username]</InArgument>
-        <InArgument x:TypeArguments="x:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
-        <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="ClientId">[ClientId]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="Username">[Username]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
         <InArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[TokenExpiry]</InArgument>
-        <OutArgument x:TypeArguments="x:Boolean" x:Key="IsRefreshed">[IsRefreshed]</OutArgument>
-        <OutArgument x:TypeArguments="x:String" x:Key="NewToken">[NewToken]</OutArgument>
+        <OutArgument x:TypeArguments="s:Boolean" x:Key="IsRefreshed">[IsRefreshed]</OutArgument>
+        <OutArgument x:TypeArguments="s:String" x:Key="NewToken">[NewToken]</OutArgument>
         <OutArgument x:TypeArguments="s:DateTime" x:Key="NewExpiry">[NewExpiry]</OutArgument>
       </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
@@ -76,15 +76,15 @@
     <!-- Step 3: Use Refreshed Token if Needed -->
     <If DisplayName="Use Refreshed Token">
       <If.Condition>
-        <InArgument x:TypeArguments="x:Boolean">[IsRefreshed]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[IsRefreshed]</InArgument>
       </If.Condition>
       <If.Then>
         <Assign DisplayName="Update Token">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:String">[AccessToken]</OutArgument>
+            <OutArgument x:TypeArguments="s:String">[AccessToken]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:String">[NewToken]</InArgument>
+            <InArgument x:TypeArguments="s:String">[NewToken]</InArgument>
           </Assign.Value>
         </Assign>
         
@@ -109,30 +109,30 @@
     
     <While DisplayName="Retry API Call">
       <While.Condition>
-        <InArgument x:TypeArguments="x:Boolean">[RetryCount &lt; MaxRetries]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[RetryCount &lt; MaxRetries]</InArgument>
       </While.Condition>
       <While.Body>
         <TryCatch DisplayName="API Call with Error Handling">
           <Try>
             <ui:HttpRequest DisplayName="Get Account Describe" Method="GET" Url="[InstanceUrl + '/services/data/v58.0/sobjects/Account/describe']">
               <ui:HttpRequest.Headers>
-                <scg:Dictionary x:TypeArguments="x:String, x:String">
+                <scg:Dictionary x:TypeArguments="s:String, s:String">
                   <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
                   <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
                 </scg:Dictionary>
               </ui:HttpRequest.Headers>
               <ui:HttpRequest.Result>
-                <OutArgument x:TypeArguments="x:String">[APIResponse]</OutArgument>
+                <OutArgument x:TypeArguments="s:String">[APIResponse]</OutArgument>
               </ui:HttpRequest.Result>
               <ui:HttpRequest.StatusCode>
-                <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+                <OutArgument x:TypeArguments="s:Int32">[StatusCode]</OutArgument>
               </ui:HttpRequest.StatusCode>
             </ui:HttpRequest>
             
             <!-- Check if successful -->
             <If DisplayName="Check API Success">
               <If.Condition>
-                <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+                <InArgument x:TypeArguments="s:Boolean">[StatusCode = 200]</InArgument>
               </If.Condition>
               <If.Then>
                 <ui:LogMessage DisplayName="API Call Successful" Level="Info" Message="API call completed successfully!" />
@@ -141,10 +141,10 @@
                 <!-- Exit retry loop -->
                 <Assign DisplayName="Exit Retry Loop">
                   <Assign.To>
-                    <OutArgument x:TypeArguments="x:Int32">[RetryCount]</OutArgument>
+                    <OutArgument x:TypeArguments="s:Int32">[RetryCount]</OutArgument>
                   </Assign.To>
                   <Assign.Value>
-                    <InArgument x:TypeArguments="x:Int32">[MaxRetries]</InArgument>
+                    <InArgument x:TypeArguments="s:Int32">[MaxRetries]</InArgument>
                   </Assign.Value>
                 </Assign>
               </If.Then>
@@ -155,10 +155,10 @@
                 <!-- Increment retry count -->
                 <Assign DisplayName="Increment Retry Count">
                   <Assign.To>
-                    <OutArgument x:TypeArguments="x:Int32">[RetryCount]</OutArgument>
+                    <OutArgument x:TypeArguments="s:Int32">[RetryCount]</OutArgument>
                   </Assign.To>
                   <Assign.Value>
-                    <InArgument x:TypeArguments="x:Int32">[RetryCount + 1]</InArgument>
+                    <InArgument x:TypeArguments="s:Int32">[RetryCount + 1]</InArgument>
                   </Assign.Value>
                 </Assign>
                 
@@ -173,10 +173,10 @@
             <!-- Increment retry count -->
             <Assign DisplayName="Increment Retry Count on Exception">
               <Assign.To>
-                <OutArgument x:TypeArguments="x:Int32">[RetryCount]</OutArgument>
+                <OutArgument x:TypeArguments="s:Int32">[RetryCount]</OutArgument>
               </Assign.To>
               <Assign.Value>
-                <InArgument x:TypeArguments="x:Int32">[RetryCount + 1]</InArgument>
+                <InArgument x:TypeArguments="s:Int32">[RetryCount + 1]</InArgument>
               </Assign.Value>
             </Assign>
             
@@ -190,7 +190,7 @@
     <!-- Step 5: Check Final Result -->
     <If DisplayName="Check Final Result">
       <If.Condition>
-        <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[StatusCode = 200]</InArgument>
       </If.Condition>
       <If.Then>
         <ui:LogMessage DisplayName="Advanced Example Complete" Level="Info" Message="Advanced JWT usage example completed successfully!" />
@@ -199,7 +199,7 @@
         <ui:LogMessage DisplayName="Advanced Example Failed" Level="Error" Message="[&quot;Advanced JWT usage example failed after &quot; + MaxRetries.ToString() + &quot; retries&quot;]" />
         <Throw DisplayName="Throw Final Error">
           <Throw.Exception>
-            <InArgument x:TypeArguments="x:Exception">[New Exception("Advanced JWT usage example failed after " + MaxRetries.ToString() + " retries")]</InArgument>
+            <InArgument x:TypeArguments="s:Exception">[New Exception("Advanced JWT usage example failed after " + MaxRetries.ToString() + " retries")]</InArgument>
           </Throw.Exception>
         </Throw>
       </If.Else>

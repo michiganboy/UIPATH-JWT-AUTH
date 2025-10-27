@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity x:Class="SalesforceJWT.GetSalesforceToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <!-- Arguments -->
-  <InArgument x:TypeArguments="x:String" x:Key="ClientId" />
-  <InArgument x:TypeArguments="x:String" x:Key="Username" />
-  <InArgument x:TypeArguments="x:String" x:Key="LoginUrl" />
-  <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath" />
-  <OutArgument x:TypeArguments="x:String" x:Key="AccessToken" />
-  <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl" />
+  <InArgument x:TypeArguments="s:String" x:Key="ClientId" />
+  <InArgument x:TypeArguments="s:String" x:Key="Username" />
+  <InArgument x:TypeArguments="s:String" x:Key="LoginUrl" />
+  <InArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath" />
+  <OutArgument x:TypeArguments="s:String" x:Key="AccessToken" />
+  <OutArgument x:TypeArguments="s:String" x:Key="InstanceUrl" />
   <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry" />
   
   <Sequence DisplayName="Get Salesforce Token">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="x:String" Name="PrivateKey" />
-    <Variable x:TypeArguments="x:String" Name="JWT" />
-    <Variable x:TypeArguments="x:String" Name="TokenEndpoint" />
-    <Variable x:TypeArguments="x:String" Name="RequestBody" />
-    <Variable x:TypeArguments="x:String" Name="ResponseBody" />
-    <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
-    <Variable x:TypeArguments="x:Object" Name="TokenResponse" />
+    <Variable x:TypeArguments="s:String" Name="PrivateKey" />
+    <Variable x:TypeArguments="s:String" Name="JWT" />
+    <Variable x:TypeArguments="s:String" Name="TokenEndpoint" />
+    <Variable x:TypeArguments="s:String" Name="RequestBody" />
+    <Variable x:TypeArguments="s:String" Name="ResponseBody" />
+    <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
+    <Variable x:TypeArguments="s:Object" Name="TokenResponse" />
     
     <!-- Read Private Key -->
     <ui:ReadTextFile DisplayName="Read Private Key" FileName="[PrivateKeyPath]" Text="[PrivateKey]" />
@@ -26,36 +26,36 @@
     <!-- Generate JWT -->
     <InvokeMethod DisplayName="Generate JWT" MethodName="GenerateJWT">
       <InvokeMethod.TargetObject>
-        <InArgument x:TypeArguments="x:Object">[New SalesforceJWT.JWTGenerator()]</InArgument>
+        <InArgument x:TypeArguments="s:Object">[New SalesforceJWT.JWTGenerator()]</InArgument>
       </InvokeMethod.TargetObject>
       <InvokeMethod.Parameters>
-        <InArgument x:TypeArguments="x:String" x:Key="clientId">[ClientId]</InArgument>
-        <InArgument x:TypeArguments="x:String" x:Key="username">[Username]</InArgument>
-        <InArgument x:TypeArguments="x:String" x:Key="loginUrl">[LoginUrl]</InArgument>
-        <InArgument x:TypeArguments="x:String" x:Key="privateKey">[PrivateKey]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="clientId">[ClientId]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="username">[Username]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="loginUrl">[LoginUrl]</InArgument>
+        <InArgument x:TypeArguments="s:String" x:Key="privateKey">[PrivateKey]</InArgument>
       </InvokeMethod.Parameters>
       <InvokeMethod.Result>
-        <OutArgument x:TypeArguments="x:String">[JWT]</OutArgument>
+        <OutArgument x:TypeArguments="s:String">[JWT]</OutArgument>
       </InvokeMethod.Result>
     </InvokeMethod>
     
     <!-- Set Token Endpoint -->
     <Assign DisplayName="Set Token Endpoint">
       <Assign.To>
-        <OutArgument x:TypeArguments="x:String">[TokenEndpoint]</OutArgument>
+        <OutArgument x:TypeArguments="s:String">[TokenEndpoint]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">[LoginUrl + "/services/oauth2/token"]</InArgument>
+        <InArgument x:TypeArguments="s:String">[LoginUrl + "/services/oauth2/token"]</InArgument>
       </Assign.Value>
     </Assign>
     
     <!-- Prepare Request Body -->
     <Assign DisplayName="Prepare Request Body">
       <Assign.To>
-        <OutArgument x:TypeArguments="x:String">[RequestBody]</OutArgument>
+        <OutArgument x:TypeArguments="s:String">[RequestBody]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">["grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&amp;assertion=" + JWT]</InArgument>
+        <InArgument x:TypeArguments="s:String">["grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&amp;assertion=" + JWT]</InArgument>
       </Assign.Value>
     </Assign>
     
@@ -64,18 +64,18 @@
       <Try>
         <ui:HttpRequest DisplayName="Exchange JWT for Access Token" Method="POST" Url="[TokenEndpoint]">
           <ui:HttpRequest.Headers>
-            <scg:Dictionary x:TypeArguments="x:String, x:String">
+            <scg:Dictionary x:TypeArguments="s:String, s:String">
               <KeyValuePair x:Key="Content-Type" x:Value="application/x-www-form-urlencoded" />
             </scg:Dictionary>
           </ui:HttpRequest.Headers>
           <ui:HttpRequest.Body>
-            <InArgument x:TypeArguments="x:String">[RequestBody]</InArgument>
+            <InArgument x:TypeArguments="s:String">[RequestBody]</InArgument>
           </ui:HttpRequest.Body>
           <ui:HttpRequest.Result>
-            <OutArgument x:TypeArguments="x:String">[ResponseBody]</OutArgument>
+            <OutArgument x:TypeArguments="s:String">[ResponseBody]</OutArgument>
           </ui:HttpRequest.Result>
           <ui:HttpRequest.StatusCode>
-            <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+            <OutArgument x:TypeArguments="s:Int32">[StatusCode]</OutArgument>
           </ui:HttpRequest.StatusCode>
         </ui:HttpRequest>
       </Try>
@@ -83,10 +83,10 @@
         <ui:InvokeWorkflowFile DisplayName="Handle Error" WorkflowFileName="Activities\HandleError.xaml">
           <ui:InvokeWorkflowFile.Arguments>
             <InArgument x:TypeArguments="s:Exception" x:Key="Exception">[Exception]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="Context">[&quot;JWT Token Exchange&quot;]</InArgument>
-            <InArgument x:TypeArguments="x:Int32" x:Key="StatusCode">[0]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="ResponseBody">[&quot;&quot;]</InArgument>
-            <InArgument x:TypeArguments="x:Boolean" x:Key="EnableDetailedLogging">[True]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="Context">[&quot;JWT Token Exchange&quot;]</InArgument>
+            <InArgument x:TypeArguments="s:Int32" x:Key="StatusCode">[0]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="ResponseBody">[&quot;&quot;]</InArgument>
+            <InArgument x:TypeArguments="s:Boolean" x:Key="EnableDetailedLogging">[True]</InArgument>
           </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
       </Catch>
@@ -95,39 +95,39 @@
     <!-- Check Response Status -->
     <If DisplayName="Check Response Status">
       <If.Condition>
-        <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">[StatusCode = 200]</InArgument>
       </If.Condition>
       <If.Then>
         <!-- Parse Response -->
         <InvokeMethod DisplayName="Parse Token Response" MethodName="ParseTokenResponse">
           <InvokeMethod.TargetObject>
-            <InArgument x:TypeArguments="x:Object">[New SalesforceJWT.TokenParser()]</InArgument>
+            <InArgument x:TypeArguments="s:Object">[New SalesforceJWT.TokenParser()]</InArgument>
           </InvokeMethod.TargetObject>
           <InvokeMethod.Parameters>
-            <InArgument x:TypeArguments="x:String" x:Key="responseBody">[ResponseBody]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="responseBody">[ResponseBody]</InArgument>
           </InvokeMethod.Parameters>
           <InvokeMethod.Result>
-            <OutArgument x:TypeArguments="x:Object">[TokenResponse]</OutArgument>
+            <OutArgument x:TypeArguments="s:Object">[TokenResponse]</OutArgument>
           </InvokeMethod.Result>
         </InvokeMethod>
         
         <!-- Extract Access Token -->
         <Assign DisplayName="Extract Access Token">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:String">[AccessToken]</OutArgument>
+            <OutArgument x:TypeArguments="s:String">[AccessToken]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:String">[CType(TokenResponse, SalesforceJWT.TokenResponse).access_token]</InArgument>
+            <InArgument x:TypeArguments="s:String">[CType(TokenResponse, SalesforceJWT.TokenResponse).access_token]</InArgument>
           </Assign.Value>
         </Assign>
         
         <!-- Extract Instance URL -->
         <Assign DisplayName="Extract Instance URL">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:String">[InstanceUrl]</OutArgument>
+            <OutArgument x:TypeArguments="s:String">[InstanceUrl]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:String">[CType(TokenResponse, SalesforceJWT.TokenResponse).instance_url]</InArgument>
+            <InArgument x:TypeArguments="s:String">[CType(TokenResponse, SalesforceJWT.TokenResponse).instance_url]</InArgument>
           </Assign.Value>
         </Assign>
         
@@ -147,10 +147,10 @@
         <ui:InvokeWorkflowFile DisplayName="Handle HTTP Error" WorkflowFileName="Activities\HandleError.xaml">
           <ui:InvokeWorkflowFile.Arguments>
             <InArgument x:TypeArguments="s:Exception" x:Key="Exception">[New Exception("HTTP Error")]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="Context">[&quot;JWT Token Exchange&quot;]</InArgument>
-            <InArgument x:TypeArguments="x:Int32" x:Key="StatusCode">[StatusCode]</InArgument>
-            <InArgument x:TypeArguments="x:String" x:Key="ResponseBody">[ResponseBody]</InArgument>
-            <InArgument x:TypeArguments="x:Boolean" x:Key="EnableDetailedLogging">[True]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="Context">[&quot;JWT Token Exchange&quot;]</InArgument>
+            <InArgument x:TypeArguments="s:Int32" x:Key="StatusCode">[StatusCode]</InArgument>
+            <InArgument x:TypeArguments="s:String" x:Key="ResponseBody">[ResponseBody]</InArgument>
+            <InArgument x:TypeArguments="s:Boolean" x:Key="EnableDetailedLogging">[True]</InArgument>
           </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
       </If.Else>

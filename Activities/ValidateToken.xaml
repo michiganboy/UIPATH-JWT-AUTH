@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity x:Class="SalesforceJWT.ValidateToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <!-- Arguments -->
-  <InArgument x:TypeArguments="x:String" x:Key="AccessToken" />
-  <InArgument x:TypeArguments="x:String" x:Key="InstanceUrl" />
-  <OutArgument x:TypeArguments="x:Boolean" x:Key="IsValid" />
-  <OutArgument x:TypeArguments="x:String" x:Key="ErrorMessage" />
+  <InArgument x:TypeArguments="s:String" x:Key="AccessToken" />
+  <InArgument x:TypeArguments="s:String" x:Key="InstanceUrl" />
+  <OutArgument x:TypeArguments="s:Boolean" x:Key="IsValid" />
+  <OutArgument x:TypeArguments="s:String" x:Key="ErrorMessage" />
   
   <Sequence DisplayName="Validate Token">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="x:String" Name="TestEndpoint" />
-    <Variable x:TypeArguments="x:String" Name="ResponseBody" />
-    <Variable x:TypeArguments="x:Int32" Name="StatusCode" />
+    <Variable x:TypeArguments="s:String" Name="TestEndpoint" />
+    <Variable x:TypeArguments="s:String" Name="ResponseBody" />
+    <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
     
     <!-- Set Test Endpoint -->
     <Assign DisplayName="Set Test Endpoint">
       <Assign.To>
-        <OutArgument x:TypeArguments="x:String">[TestEndpoint]</OutArgument>
+        <OutArgument x:TypeArguments="s:String">[TestEndpoint]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">[InstanceUrl + "/services/data/v58.0/sobjects/User/describe"]</InArgument>
+        <InArgument x:TypeArguments="s:String">[InstanceUrl + "/services/data/v58.0/sobjects/User/describe"]</InArgument>
       </Assign.Value>
     </Assign>
     
@@ -28,40 +28,40 @@
       <Try>
         <ui:HttpRequest DisplayName="Test API Call" Method="GET" Url="[TestEndpoint]">
           <ui:HttpRequest.Headers>
-            <scg:Dictionary x:TypeArguments="x:String, x:String">
+            <scg:Dictionary x:TypeArguments="s:String, s:String">
               <KeyValuePair x:Key="Authorization" x:Value="[&quot;Bearer &quot; + AccessToken]" />
               <KeyValuePair x:Key="Content-Type" x:Value="application/json" />
             </scg:Dictionary>
           </ui:HttpRequest.Headers>
           <ui:HttpRequest.Result>
-            <OutArgument x:TypeArguments="x:String">[ResponseBody]</OutArgument>
+            <OutArgument x:TypeArguments="s:String">[ResponseBody]</OutArgument>
           </ui:HttpRequest.Result>
           <ui:HttpRequest.StatusCode>
-            <OutArgument x:TypeArguments="x:Int32">[StatusCode]</OutArgument>
+            <OutArgument x:TypeArguments="s:Int32">[StatusCode]</OutArgument>
           </ui:HttpRequest.StatusCode>
         </ui:HttpRequest>
         
         <!-- Check Response Status -->
         <If DisplayName="Check API Response">
           <If.Condition>
-            <InArgument x:TypeArguments="x:Boolean">[StatusCode = 200]</InArgument>
+            <InArgument x:TypeArguments="s:Boolean">[StatusCode = 200]</InArgument>
           </If.Condition>
           <If.Then>
             <Assign DisplayName="Set Token Valid">
               <Assign.To>
-                <OutArgument x:TypeArguments="x:Boolean">[IsValid]</OutArgument>
+                <OutArgument x:TypeArguments="s:Boolean">[IsValid]</OutArgument>
               </Assign.To>
               <Assign.Value>
-                <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+                <InArgument x:TypeArguments="s:Boolean">[True]</InArgument>
               </Assign.Value>
             </Assign>
             
             <Assign DisplayName="Clear Error Message">
               <Assign.To>
-                <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
               </Assign.To>
               <Assign.Value>
-                <InArgument x:TypeArguments="x:String">[String.Empty]</InArgument>
+                <InArgument x:TypeArguments="s:String">[String.Empty]</InArgument>
               </Assign.Value>
             </Assign>
             
@@ -70,19 +70,19 @@
           <If.Else>
             <Assign DisplayName="Set Token Invalid">
               <Assign.To>
-                <OutArgument x:TypeArguments="x:Boolean">[IsValid]</OutArgument>
+                <OutArgument x:TypeArguments="s:Boolean">[IsValid]</OutArgument>
               </Assign.To>
               <Assign.Value>
-                <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+                <InArgument x:TypeArguments="s:Boolean">[False]</InArgument>
               </Assign.Value>
             </Assign>
             
             <Assign DisplayName="Set Error Message">
               <Assign.To>
-                <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+                <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
               </Assign.To>
               <Assign.Value>
-                <InArgument x:TypeArguments="x:String">["API call failed with status code: " + StatusCode.ToString() + ". Response: " + ResponseBody]</InArgument>
+                <InArgument x:TypeArguments="s:String">["API call failed with status code: " + StatusCode.ToString() + ". Response: " + ResponseBody]</InArgument>
               </Assign.Value>
             </Assign>
             
@@ -93,19 +93,19 @@
       <Catch>
         <Assign DisplayName="Set Token Invalid on Exception">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:Boolean">[IsValid]</OutArgument>
+            <OutArgument x:TypeArguments="s:Boolean">[IsValid]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+            <InArgument x:TypeArguments="s:Boolean">[False]</InArgument>
           </Assign.Value>
         </Assign>
         
         <Assign DisplayName="Set Exception Error Message">
           <Assign.To>
-            <OutArgument x:TypeArguments="x:String">[ErrorMessage]</OutArgument>
+            <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
           </Assign.To>
           <Assign.Value>
-            <InArgument x:TypeArguments="x:String">["Token validation failed with exception: " + Exception.Message]</InArgument>
+            <InArgument x:TypeArguments="s:String">["Token validation failed with exception: " + Exception.Message]</InArgument>
           </Assign.Value>
         </Assign>
         
