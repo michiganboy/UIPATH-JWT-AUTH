@@ -15,9 +15,6 @@
       "includeOriginalXaml": false,
       "privateWorkflows": []
     },
-    "processOptions": {
-      "ignoredFiles": []
-    },
     "fileInfoCollection": [],
     "modernBehavior": false
   },
