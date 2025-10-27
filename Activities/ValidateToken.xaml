@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity x:Class="SalesforceJWT.ValidateToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
+  <!-- Arguments -->
+  <InArgument x:TypeArguments="x:String" x:Key="AccessToken" />
+  <InArgument x:TypeArguments="x:String" x:Key="InstanceUrl" />
+  <OutArgument x:TypeArguments="x:Boolean" x:Key="IsValid" />
+  <OutArgument x:TypeArguments="x:String" x:Key="ErrorMessage" />
+  
   <Sequence DisplayName="Validate Token">
-    <!-- Arguments -->
-    <InArgument x:TypeArguments="x:String" x:Key="AccessToken" />
-    <InArgument x:TypeArguments="x:String" x:Key="InstanceUrl" />
-    <OutArgument x:TypeArguments="x:Boolean" x:Key="IsValid" />
-    <OutArgument x:TypeArguments="x:String" x:Key="ErrorMessage" />
     
     <!-- Variables -->
     <Variable x:TypeArguments="x:String" Name="TestEndpoint" />
