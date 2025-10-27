@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" x:Class="SalesforceJWT.GetSalesforceToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix">
   <Sequence DisplayName="Get Salesforce Token">
+    <!-- Input Arguments -->
+    <Variable x:TypeArguments="x:String" Name="ClientId" Direction="In" />
+    <Variable x:TypeArguments="x:String" Name="Username" Direction="In" />
+    <Variable x:TypeArguments="x:String" Name="LoginUrl" Direction="In" />
+    <Variable x:TypeArguments="x:String" Name="PrivateKeyPath" Direction="In" />
+    
+    <!-- Output Arguments -->
+    <Variable x:TypeArguments="x:String" Name="AccessToken" Direction="Out" />
+    <Variable x:TypeArguments="x:String" Name="InstanceUrl" Direction="Out" />
+    <Variable x:TypeArguments="x:DateTime" Name="TokenExpiry" Direction="Out" />
+    
     <!-- Variables -->
     <Variable x:TypeArguments="x:String" Name="PrivateKey" />
     <Variable x:TypeArguments="x:String" Name="JWT" />
@@ -73,9 +84,9 @@
         <ui:InvokeWorkflowFile DisplayName="Handle Error" WorkflowFileName="Activities\HandleError.xaml">
           <Arguments>
             <Argument x:TypeArguments="x:Exception" Name="Exception" Value="[Exception]" />
-            <Argument x:TypeArguments="x:String" Name="Context" Value="["JWT Token Exchange"]" />
+            <Argument x:TypeArguments="x:String" Name="Context" Value="[&quot;JWT Token Exchange&quot;]" />
             <Argument x:TypeArguments="x:Int32" Name="StatusCode" Value="[0]" />
-            <Argument x:TypeArguments="x:String" Name="ResponseBody" Value="[""]" />
+            <Argument x:TypeArguments="x:String" Name="ResponseBody" Value="[&quot;&quot;]" />
             <Argument x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Value="[True]" />
           </Arguments>
         </ui:InvokeWorkflowFile>
@@ -137,7 +148,7 @@
         <ui:InvokeWorkflowFile DisplayName="Handle HTTP Error" WorkflowFileName="Activities\HandleError.xaml">
           <Arguments>
             <Argument x:TypeArguments="x:Exception" Name="Exception" Value="[New Exception("HTTP Error")]" />
-            <Argument x:TypeArguments="x:String" Name="Context" Value="["JWT Token Exchange"]" />
+            <Argument x:TypeArguments="x:String" Name="Context" Value="[&quot;JWT Token Exchange&quot;]" />
             <Argument x:TypeArguments="x:Int32" Name="StatusCode" Value="[StatusCode]" />
             <Argument x:TypeArguments="x:String" Name="ResponseBody" Value="[ResponseBody]" />
             <Argument x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Value="[True]" />
