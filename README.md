@@ -49,10 +49,12 @@ UiPath-JWT-Auth/
 ├── Config/
 │   ├── JWT-Config.json
 │   └── Certificate.pem.example
-└── Examples/
-    ├── BasicUsage.xaml
-    ├── AdvancedUsage.xaml
-    └── MigrationExample.xaml
+├── Examples/
+│   ├── BasicUsage.xaml
+│   ├── AdvancedUsage.xaml
+│   └── MigrationExample.xaml
+└── Libraries/
+    └── SalesforceJWT.dll
 ```
 
 ---
@@ -66,7 +68,7 @@ UiPath-JWT-Auth/
                              │
                              ▼
              ┌───────────────────────────────┐
-             │   LoadConfiguration.xaml     │
+             │   LoadConfiguration.xaml      │
              └────────────┬──────────────────┘
                           │
                           ▼
