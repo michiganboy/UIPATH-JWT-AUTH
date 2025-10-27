@@ -37,6 +37,7 @@ All `.xaml` files are written for **Windows-Legacy** UiPath projects using the *
 ```
 UiPath-JWT-Auth/
 ├── Main.xaml
+├── project.json
 ├── Activities/
 │   ├── GetSalesforceToken.xaml
 │   ├── RefreshToken.xaml
@@ -100,6 +101,23 @@ UiPath-JWT-Auth/
 
 > This package is required to open and run any `.xaml` file without "missing activity" errors.  
 > Without it, UiPath may interpret the project as Windows (.NET 6).
+
+### 📄 Project Configuration
+
+The `project.json` file is **critical** for Windows-Legacy compatibility:
+
+```json
+{
+  "projectProfile": "WindowsLegacy",
+  "modernBehavior": false,
+  "dependencies": {
+    "UiPath.System.Activities": "24.10.3"
+  }
+}
+```
+
+> **Important**: This file ensures UiPath opens the project in Windows-Legacy mode instead of Windows mode.  
+> Without it, the project may open in the wrong compatibility mode and cause parsing errors.
 
 ### 🧰 .NET Libraries (for C# code)
 
