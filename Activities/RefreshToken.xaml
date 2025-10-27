@@ -48,15 +48,15 @@
         
         <!-- Get new token -->
         <ui:InvokeWorkflowFile DisplayName="Get New Token" WorkflowFileName="GetSalesforceToken.xaml">
-          <Arguments>
-            <Argument x:TypeArguments="x:String" Name="ClientId" Value="[ClientId]" />
-            <Argument x:TypeArguments="x:String" Name="Username" Value="[Username]" />
-            <Argument x:TypeArguments="x:String" Name="LoginUrl" Value="[LoginUrl]" />
-            <Argument x:TypeArguments="x:String" Name="PrivateKeyPath" Value="[PrivateKeyPath]" />
-            <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[NewToken]" />
-            <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[NewInstanceUrl]" />
-            <Argument x:TypeArguments="x:DateTime" Name="TokenExpiry" Value="[NewExpiry]" />
-          </Arguments>
+          <ui:InvokeWorkflowFile.Arguments>
+            <InArgument x:TypeArguments="x:String" x:Key="ClientId">[ClientId]</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="Username">[Username]</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
+            <OutArgument x:TypeArguments="x:String" x:Key="AccessToken">[NewToken]</OutArgument>
+            <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[NewInstanceUrl]</OutArgument>
+            <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[NewExpiry]</OutArgument>
+          </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
         
         <!-- Set refresh results -->

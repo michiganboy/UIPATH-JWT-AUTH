@@ -20,41 +20,41 @@
     
     <!-- Load Configuration -->
     <ui:InvokeWorkflowFile DisplayName="Load Configuration" WorkflowFileName="Activities\LoadConfiguration.xaml">
-      <Arguments>
-        <Argument x:TypeArguments="x:String" Name="ClientId" Value="[ClientId]" />
-        <Argument x:TypeArguments="x:String" Name="Username" Value="[Username]" />
-        <Argument x:TypeArguments="x:String" Name="LoginUrl" Value="[LoginUrl]" />
-        <Argument x:TypeArguments="x:String" Name="PrivateKeyPath" Value="[PrivateKeyPath]" />
-        <Argument x:TypeArguments="x:String" Name="TokenEndpoint" Value="[TokenEndpoint]" />
-        <Argument x:TypeArguments="x:Int32" Name="ExpiryBuffer" Value="[ExpiryBuffer]" />
-        <Argument x:TypeArguments="x:Int32" Name="MaxRetries" Value="[MaxRetries]" />
-        <Argument x:TypeArguments="x:Int32" Name="RetryDelay" Value="[RetryDelay]" />
-        <Argument x:TypeArguments="x:String" Name="LogLevel" Value="[LogLevel]" />
-        <Argument x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Value="[EnableDetailedLogging]" />
-      </Arguments>
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="ClientId">[ClientId]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="Username">[Username]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="TokenEndpoint">[TokenEndpoint]</InArgument>
+        <InArgument x:TypeArguments="x:Int32" x:Key="ExpiryBuffer">[ExpiryBuffer]</InArgument>
+        <InArgument x:TypeArguments="x:Int32" x:Key="MaxRetries">[MaxRetries]</InArgument>
+        <InArgument x:TypeArguments="x:Int32" x:Key="RetryDelay">[RetryDelay]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="LogLevel">[LogLevel]</InArgument>
+        <InArgument x:TypeArguments="x:Boolean" x:Key="EnableDetailedLogging">[EnableDetailedLogging]</InArgument>
+      </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
     
     <!-- Get Salesforce Token -->
     <ui:InvokeWorkflowFile DisplayName="Get Salesforce Token" WorkflowFileName="Activities\GetSalesforceToken.xaml">
-      <Arguments>
-        <Argument x:TypeArguments="x:String" Name="ClientId" Value="[ClientId]" />
-        <Argument x:TypeArguments="x:String" Name="Username" Value="[Username]" />
-        <Argument x:TypeArguments="x:String" Name="LoginUrl" Value="[LoginUrl]" />
-        <Argument x:TypeArguments="x:String" Name="PrivateKeyPath" Value="[PrivateKeyPath]" />
-        <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
-        <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
-        <Argument x:TypeArguments="s:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
-      </Arguments>
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="ClientId">[ClientId]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="Username">[Username]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="AccessToken">[AccessToken]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[InstanceUrl]</OutArgument>
+        <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[TokenExpiry]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
     
     <!-- Validate Token -->
     <ui:InvokeWorkflowFile DisplayName="Validate Token" WorkflowFileName="Activities\ValidateToken.xaml">
-      <Arguments>
-        <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
-        <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
-        <Argument x:TypeArguments="x:Boolean" Name="IsValid" Value="[IsValid]" />
-        <Argument x:TypeArguments="x:String" Name="ErrorMessage" Value="[ErrorMessage]" />
-      </Arguments>
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="AccessToken">[AccessToken]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[InstanceUrl]</InArgument>
+        <OutArgument x:TypeArguments="x:Boolean" x:Key="IsValid">[IsValid]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="ErrorMessage">[ErrorMessage]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
     
     <!-- Log Results -->
@@ -66,8 +66,10 @@
         <ui:LogMessage DisplayName="Authentication Successful" Level="Info" Message="[&quot;Salesforce JWT Authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
       </If.Then>
       <If.Else>
-        <ui:LogMessage DisplayName="Authentication Failed" Level="Error" Message="[&quot;Salesforce JWT Authentication failed: &quot; + ErrorMessage]" />
-        <ui:LogMessage DisplayName="Stopping Workflow" Level="Error" Message="Workflow stopped due to authentication failure" />
+        <Sequence DisplayName="Authentication Failed Actions">
+          <ui:LogMessage DisplayName="Authentication Failed" Level="Error" Message="[&quot;Salesforce JWT Authentication failed: &quot; + ErrorMessage]" />
+          <ui:LogMessage DisplayName="Stopping Workflow" Level="Error" Message="Workflow stopped due to authentication failure" />
+        </Sequence>
       </If.Else>
     </If>
     

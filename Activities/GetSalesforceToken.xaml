@@ -30,10 +30,10 @@
         <InArgument x:TypeArguments="x:Object">[New SalesforceJWT.JWTGenerator()]</InArgument>
       </InvokeMethod.TargetObject>
       <InvokeMethod.Parameters>
-        <Argument x:TypeArguments="x:String" Name="clientId" Value="[ClientId]" />
-        <Argument x:TypeArguments="x:String" Name="username" Value="[Username]" />
-        <Argument x:TypeArguments="x:String" Name="loginUrl" Value="[LoginUrl]" />
-        <Argument x:TypeArguments="x:String" Name="privateKey" Value="[PrivateKey]" />
+        <InArgument x:TypeArguments="x:String" x:Key="clientId">[ClientId]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="username">[Username]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="loginUrl">[LoginUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="privateKey">[PrivateKey]</InArgument>
       </InvokeMethod.Parameters>
       <InvokeMethod.Result>
         <OutArgument x:TypeArguments="x:String">[JWT]</OutArgument>
@@ -82,13 +82,13 @@
       </Try>
       <Catch>
         <ui:InvokeWorkflowFile DisplayName="Handle Error" WorkflowFileName="Activities\HandleError.xaml">
-          <Arguments>
-            <Argument x:TypeArguments="s:Exception" Name="Exception" Value="[Exception]" />
-            <Argument x:TypeArguments="x:String" Name="Context" Value="[&quot;JWT Token Exchange&quot;]" />
-            <Argument x:TypeArguments="x:Int32" Name="StatusCode" Value="[0]" />
-            <Argument x:TypeArguments="x:String" Name="ResponseBody" Value="[&quot;&quot;]" />
-            <Argument x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Value="[True]" />
-          </Arguments>
+          <ui:InvokeWorkflowFile.Arguments>
+            <InArgument x:TypeArguments="s:Exception" x:Key="Exception">[Exception]</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="Context">[&quot;JWT Token Exchange&quot;]</InArgument>
+            <InArgument x:TypeArguments="x:Int32" x:Key="StatusCode">[0]</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="ResponseBody">[&quot;&quot;]</InArgument>
+            <InArgument x:TypeArguments="x:Boolean" x:Key="EnableDetailedLogging">[True]</InArgument>
+          </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
       </Catch>
     </TryCatch>
@@ -105,7 +105,7 @@
             <InArgument x:TypeArguments="x:Object">[New SalesforceJWT.TokenParser()]</InArgument>
           </InvokeMethod.TargetObject>
           <InvokeMethod.Parameters>
-            <Argument x:TypeArguments="x:String" Name="responseBody" Value="[ResponseBody]" />
+            <InArgument x:TypeArguments="x:String" x:Key="responseBody">[ResponseBody]</InArgument>
           </InvokeMethod.Parameters>
           <InvokeMethod.Result>
             <OutArgument x:TypeArguments="x:Object">[TokenResponse]</OutArgument>
@@ -146,13 +146,13 @@
       </If.Then>
       <If.Else>
         <ui:InvokeWorkflowFile DisplayName="Handle HTTP Error" WorkflowFileName="Activities\HandleError.xaml">
-          <Arguments>
-            <Argument x:TypeArguments="s:Exception" Name="Exception" Value="[New Exception("HTTP Error")]" />
-            <Argument x:TypeArguments="x:String" Name="Context" Value="[&quot;JWT Token Exchange&quot;]" />
-            <Argument x:TypeArguments="x:Int32" Name="StatusCode" Value="[StatusCode]" />
-            <Argument x:TypeArguments="x:String" Name="ResponseBody" Value="[ResponseBody]" />
-            <Argument x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Value="[True]" />
-          </Arguments>
+          <ui:InvokeWorkflowFile.Arguments>
+            <InArgument x:TypeArguments="s:Exception" x:Key="Exception">[New Exception("HTTP Error")]</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="Context">[&quot;JWT Token Exchange&quot;]</InArgument>
+            <InArgument x:TypeArguments="x:Int32" x:Key="StatusCode">[StatusCode]</InArgument>
+            <InArgument x:TypeArguments="x:String" x:Key="ResponseBody">[ResponseBody]</InArgument>
+            <InArgument x:TypeArguments="x:Boolean" x:Key="EnableDetailedLogging">[True]</InArgument>
+          </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
       </If.Else>
     </If>

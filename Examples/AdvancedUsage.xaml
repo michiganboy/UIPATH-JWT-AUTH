@@ -38,11 +38,11 @@
     <TryCatch DisplayName="Get Initial Token with Error Handling">
       <Try>
         <ui:InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
-          <Arguments>
-            <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
-            <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
-            <Argument x:TypeArguments="s:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
-          </Arguments>
+          <ui:InvokeWorkflowFile.Arguments>
+            <OutArgument x:TypeArguments="x:String" x:Key="AccessToken">[AccessToken]</OutArgument>
+            <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[InstanceUrl]</OutArgument>
+            <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[TokenExpiry]</OutArgument>
+          </ui:InvokeWorkflowFile.Arguments>
         </ui:InvokeWorkflowFile>
         
         <ui:LogMessage DisplayName="Initial Token Retrieved" Level="Info" Message="[&quot;Initial token retrieved. Expires at: &quot; + TokenExpiry.ToString()]" />
@@ -61,13 +61,16 @@
     <ui:LogMessage DisplayName="Checking Token Refresh" Level="Info" Message="Checking if token needs refresh..." />
     
     <ui:InvokeWorkflowFile DisplayName="Check Token Refresh" WorkflowFileName="Activities\RefreshToken.xaml">
-      <Arguments>
-        <Argument x:TypeArguments="x:String" Name="CurrentToken" Value="[AccessToken]" />
-        <Argument x:TypeArguments="s:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
-        <Argument x:TypeArguments="x:Boolean" Name="IsRefreshed" Value="[IsRefreshed]" />
-        <Argument x:TypeArguments="x:String" Name="NewToken" Value="[NewToken]" />
-        <Argument x:TypeArguments="s:DateTime" Name="NewExpiry" Value="[NewExpiry]" />
-      </Arguments>
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="ClientId">[ClientId]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="Username">[Username]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="LoginUrl">[LoginUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath">[PrivateKeyPath]</InArgument>
+        <InArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[TokenExpiry]</InArgument>
+        <OutArgument x:TypeArguments="x:Boolean" x:Key="IsRefreshed">[IsRefreshed]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="NewToken">[NewToken]</OutArgument>
+        <OutArgument x:TypeArguments="s:DateTime" x:Key="NewExpiry">[NewExpiry]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
     
     <!-- Step 3: Use Refreshed Token if Needed -->

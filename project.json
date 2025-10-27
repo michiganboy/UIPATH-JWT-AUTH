@@ -1,12 +1,46 @@
 {
   "name": "SalesforceJWT",
+  "projectId": "YOUR_UNIQUE_PROJECT_ID_HERE",
   "description": "Salesforce JWT Authentication for UiPath Windows-Legacy",
   "main": "Main.xaml",
-  "projectType": "Workflow",
-  "projectProfile": "WindowsLegacy",
-  "projectVersion": "1.0.0",
   "dependencies": {
-    "UiPath.System.Activities": "24.10.3"
+    ".NET Dependencies": {
+      "Microsoft.IdentityModel.Tokens": "7.4.1",
+      "System.IdentityModel.Tokens.Jwt": "7.4.1",
+      "System.Security.Cryptography.Xml": "8.0.2",
+      "Newtonsoft.Json": "13.0.3"
+    },
+    "UiPath Activity Packages": {
+      "UiPath.Excel.Activities": "2.23.4",
+      "UiPath.Mail.Activities": "1.23.1",
+      "UiPath.System.Activities": "24.10.3",
+      "UiPath.Testing.Activities": "24.10.0",
+      "UiPath.UIAutomation.Activities": "24.10.0",
+      "UiPath.WebAPI.Activities": "1.21.1"
+    }
+  },
+  "webServices": [],
+  "entitiesStores": [],
+  "schemaVersion": "4.0",
+  "studioVersion": "YOUR_UIPATH_STUDIO_VERSION_HERE",
+  "projectVersion": "1.0.0",
+  "runtimeOptions": {
+    "autoDispose": false,
+    "netFrameworkLazyLoading": false,
+    "isPausable": true,
+    "isAttended": false,
+    "requiresUserInteraction": true,
+    "supportsPersistence": false,
+    "workflowSerialization": "DataContract",
+    "excludedLoggedData": [
+      "Private:*",
+      "*password*"
+    ],
+    "executionType": "Workflow",
+    "readyForPip": false,
+    "startsInPip": false,
+    "mustRestoreAllDependencies": true,
+    "pipType": "ChildSession"
   },
   "designOptions": {
     "projectProfile": "WindowsLegacy",
@@ -18,6 +52,9 @@
     "fileInfoCollection": [],
     "modernBehavior": false
   },
-  "expressionLanguage": "VB",
-  "executionType": "Workflow"
+  "expressionLanguage": "VisualBasic",
+  "isTemplate": false,
+  "templateProjectData": {},
+  "publishData": {},
+  "targetFramework": "Legacy"
 }

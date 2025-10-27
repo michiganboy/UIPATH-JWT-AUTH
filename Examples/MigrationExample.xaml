@@ -12,11 +12,11 @@
     <ui:LogMessage DisplayName="JWT Authentication" Level="Info" Message="Using JWT authentication instead of SOAP..." />
     
     <ui:InvokeWorkflowFile DisplayName="Get JWT Token" WorkflowFileName="Main.xaml">
-      <Arguments>
-        <Argument x:TypeArguments="x:String" Name="AccessToken" Value="[AccessToken]" />
-        <Argument x:TypeArguments="x:String" Name="InstanceUrl" Value="[InstanceUrl]" />
-        <Argument x:TypeArguments="s:DateTime" Name="TokenExpiry" Value="[TokenExpiry]" />
-      </Arguments>
+      <ui:InvokeWorkflowFile.Arguments>
+        <OutArgument x:TypeArguments="x:String" x:Key="AccessToken">[AccessToken]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="InstanceUrl">[InstanceUrl]</OutArgument>
+        <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry">[TokenExpiry]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
     
     <ui:LogMessage DisplayName="JWT Authentication Complete" Level="Info" Message="[&quot;JWT authentication successful. Token expires at: &quot; + TokenExpiry.ToString()]" />
