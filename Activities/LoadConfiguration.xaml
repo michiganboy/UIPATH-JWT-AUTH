@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity x:Class="SalesforceJWT.LoadConfiguration" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Load Configuration">
+    <!-- Arguments -->
+    <OutArgument x:TypeArguments="x:String" x:Key="ClientId" />
+    <OutArgument x:TypeArguments="x:String" x:Key="Username" />
+    <OutArgument x:TypeArguments="x:String" x:Key="LoginUrl" />
+    <OutArgument x:TypeArguments="x:String" x:Key="PrivateKeyPath" />
+    <OutArgument x:TypeArguments="x:String" x:Key="TokenEndpoint" />
+    <OutArgument x:TypeArguments="x:Int32" x:Key="ExpiryBuffer" />
+    <OutArgument x:TypeArguments="x:Int32" x:Key="MaxRetries" />
+    <OutArgument x:TypeArguments="x:Int32" x:Key="RetryDelay" />
+    <OutArgument x:TypeArguments="x:String" x:Key="LogLevel" />
+    <OutArgument x:TypeArguments="x:Boolean" x:Key="EnableDetailedLogging" />
+    
     <!-- Variables -->
     <Variable x:TypeArguments="x:String" Name="ConfigFilePath" Default="Config/JWT-Config.json" />
     <Variable x:TypeArguments="x:String" Name="ConfigContent" />
     <Variable x:TypeArguments="x:Object" Name="ConfigObject" />
-    
-    <!-- Arguments -->
-    <Variable x:TypeArguments="x:String" Name="ClientId" Direction="Out" />
-    <Variable x:TypeArguments="x:String" Name="Username" Direction="Out" />
-    <Variable x:TypeArguments="x:String" Name="LoginUrl" Direction="Out" />
-    <Variable x:TypeArguments="x:String" Name="PrivateKeyPath" Direction="Out" />
-    <Variable x:TypeArguments="x:String" Name="TokenEndpoint" Direction="Out" />
-    <Variable x:TypeArguments="x:Int32" Name="ExpiryBuffer" Direction="Out" />
-    <Variable x:TypeArguments="x:Int32" Name="MaxRetries" Direction="Out" />
-    <Variable x:TypeArguments="x:Int32" Name="RetryDelay" Direction="Out" />
-    <Variable x:TypeArguments="x:String" Name="LogLevel" Direction="Out" />
-    <Variable x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Direction="Out" />
     
     <!-- Read Configuration File -->
     <ui:LogMessage DisplayName="Loading Configuration" Level="Info" Message="[&quot;Loading configuration from: &quot; + ConfigFilePath]" />

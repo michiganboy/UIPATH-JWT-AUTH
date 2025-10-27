@@ -2,11 +2,11 @@
 <Activity x:Class="SalesforceJWT.HandleError" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Handle Error">
     <!-- Arguments -->
-    <Variable x:TypeArguments="s:Exception" Name="Exception" Direction="In" />
-    <Variable x:TypeArguments="x:String" Name="Context" Direction="In" />
-    <Variable x:TypeArguments="x:Int32" Name="StatusCode" Direction="In" />
-    <Variable x:TypeArguments="x:String" Name="ResponseBody" Direction="In" />
-    <Variable x:TypeArguments="x:Boolean" Name="EnableDetailedLogging" Direction="In" />
+    <InArgument x:TypeArguments="s:Exception" x:Key="Exception" />
+    <InArgument x:TypeArguments="x:String" x:Key="Context" />
+    <InArgument x:TypeArguments="x:Int32" x:Key="StatusCode" />
+    <InArgument x:TypeArguments="x:String" x:Key="ResponseBody" />
+    <InArgument x:TypeArguments="x:Boolean" x:Key="EnableDetailedLogging" />
     
     <!-- Variables -->
     <Variable x:TypeArguments="x:String" Name="ErrorMessage" />
