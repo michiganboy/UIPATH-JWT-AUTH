@@ -2,6 +2,10 @@
 <Activity x:Class="SalesforceJWT.AdvancedUsage" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
   <Sequence DisplayName="Advanced JWT Usage Example">
     <!-- Variables -->
+    <Variable x:TypeArguments="s:String" Name="ClientId" Default="YOUR_CLIENT_ID" />
+    <Variable x:TypeArguments="s:String" Name="Username" Default="YOUR_USERNAME" />
+    <Variable x:TypeArguments="s:String" Name="LoginUrl" Default="https://login.salesforce.com" />
+    <Variable x:TypeArguments="s:String" Name="PrivateKeyPath" Default="Config/private_key.pem" />
     <Variable x:TypeArguments="s:String" Name="AccessToken" />
     <Variable x:TypeArguments="s:String" Name="InstanceUrl" />
     <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" />

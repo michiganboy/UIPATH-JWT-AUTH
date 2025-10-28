@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity x:Class="SalesforceJWT.GetSalesforceToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
-  <!-- Arguments -->
-  <InArgument x:TypeArguments="s:String" x:Key="ClientId" />
-  <InArgument x:TypeArguments="s:String" x:Key="Username" />
-  <InArgument x:TypeArguments="s:String" x:Key="LoginUrl" />
-  <InArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath" />
-  <OutArgument x:TypeArguments="s:String" x:Key="AccessToken" />
-  <OutArgument x:TypeArguments="s:String" x:Key="InstanceUrl" />
-  <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry" />
+  <Activity.Arguments>
+    <InArgument x:TypeArguments="s:String" x:Key="ClientId" />
+    <InArgument x:TypeArguments="s:String" x:Key="Username" />
+    <InArgument x:TypeArguments="s:String" x:Key="LoginUrl" />
+    <InArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath" />
+    <OutArgument x:TypeArguments="s:String" x:Key="AccessToken" />
+    <OutArgument x:TypeArguments="s:String" x:Key="InstanceUrl" />
+    <OutArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry" />
+  </Activity.Arguments>
   
   <Sequence DisplayName="Get Salesforce Token">
     
