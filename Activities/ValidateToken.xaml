@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Activity x:Class="SalesforceJWT.ValidateToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
+<Activity x:Class="SalesforceJWT.ValidateToken"
+  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:s="clr-namespace:System;assembly=mscorlib"
+  xmlns:ui="http://schemas.uipath.com/workflow/activities">
+
   <x:Members>
-    <x:Property Name="AccessToken" Type="InArgument(x:String)" />
-    <x:Property Name="InstanceUrl" Type="InArgument(x:String)" />
-    <x:Property Name="IsValid" Type="OutArgument(x:Boolean)" />
-    <x:Property Name="ErrorMessage" Type="OutArgument(x:String)" />
+    <!-- Inputs -->
+    <x:Property Name="AccessToken"   Type="InArgument(s:String)" />
+    <x:Property Name="TokenExpiry"   Type="InArgument(s:DateTime)" />
+    <x:Property Name="ExpiryBuffer"  Type="InArgument(s:Int32)" />
+    <!-- Outputs -->
+    <x:Property Name="IsValid"       Type="OutArgument(s:Boolean)" />
+    <x:Property Name="SecondsLeft"   Type="OutArgument(s:Int32)" />
   </x:Members>
   
   <Sequence DisplayName="Validate Token">

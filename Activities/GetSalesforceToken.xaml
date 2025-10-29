@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Activity x:Class="SalesforceJWT.GetSalesforceToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
+<Activity x:Class="SalesforceJWT.GetSalesforceToken"
+  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:s="clr-namespace:System;assembly=mscorlib"
+  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+  xmlns:ui="http://schemas.uipath.com/workflow/activities">  
+  
   <x:Members>
-    <x:Property Name="ClientId" Type="InArgument(x:String)" />
-    <x:Property Name="Username" Type="InArgument(x:String)" />
-    <x:Property Name="LoginUrl" Type="InArgument(x:String)" />
-    <x:Property Name="PrivateKeyPath" Type="InArgument(x:String)" />
-    <x:Property Name="AccessToken" Type="OutArgument(x:String)" />
-    <x:Property Name="InstanceUrl" Type="OutArgument(x:String)" />
-    <x:Property Name="TokenExpiry" Type="OutArgument(x:DateTime)" />
+    <!-- Inputs -->
+    <x:Property Name="ClientId"       Type="InArgument(s:String)" />
+    <x:Property Name="Username"       Type="InArgument(s:String)" />
+    <x:Property Name="LoginUrl"       Type="InArgument(s:String)" />
+    <!-- Use either PrivateKeyPath (recommended) or PrivateKey (inline PEM) -->
+    <x:Property Name="PrivateKeyPath" Type="InArgument(s:String)" />
+    <x:Property Name="PrivateKey"     Type="InArgument(s:String)" />
+    <x:Property Name="TokenEndpoint"  Type="InArgument(s:String)" />
+    <x:Property Name="MaxRetries"     Type="InArgument(s:Int32)" />
+    <x:Property Name="RetryDelay"     Type="InArgument(s:Int32)" />
+    <x:Property Name="EnableDetailedLogging" Type="InArgument(s:Boolean)" />
+    <!-- Outputs -->
+    <x:Property Name="AccessToken"    Type="OutArgument(s:String)" />
+    <x:Property Name="InstanceUrl"    Type="OutArgument(s:String)" />
+    <x:Property Name="TokenExpiry"    Type="OutArgument(s:DateTime)" />
+    <!-- Optional: raw HTTP response for diagnostics -->
+    <x:Property Name="RawResponse"    Type="OutArgument(s:String)" />
+    <x:Property Name="StatusCode"     Type="OutArgument(s:Int32)" />
   </x:Members>
   
   <Sequence DisplayName="Get Salesforce Token">

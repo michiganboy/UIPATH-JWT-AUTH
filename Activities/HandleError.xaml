@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Activity x:Class="SalesforceJWT.HandleError" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
+<Activity x:Class="SalesforceJWT.HandleError"
+  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:s="clr-namespace:System;assembly=mscorlib"
+  xmlns:ui="http://schemas.uipath.com/workflow/activities">
+
   <x:Members>
-    <x:Property Name="Exception" Type="InArgument(x:Exception)" />
-    <x:Property Name="Context" Type="InArgument(x:String)" />
-    <x:Property Name="StatusCode" Type="InArgument(x:Int32)" />
-    <x:Property Name="ResponseBody" Type="InArgument(x:String)" />
-    <x:Property Name="EnableDetailedLogging" Type="InArgument(x:Boolean)" />
+    <!-- Inputs -->
+    <x:Property Name="Exception"            Type="InArgument(s:Exception)" />
+    <x:Property Name="Context"              Type="InArgument(s:String)" />
+    <x:Property Name="StatusCode"           Type="InArgument(s:Int32)" />
+    <x:Property Name="ResponseBody"         Type="InArgument(s:String)" />
+    <x:Property Name="EnableDetailedLogging" Type="InArgument(s:Boolean)" />
+    <!-- Optional output if you want to bubble up a formatted error -->
+    <x:Property Name="FormattedMessage"     Type="OutArgument(s:String)" />
   </x:Members>
   
   <Sequence DisplayName="Handle Error">
