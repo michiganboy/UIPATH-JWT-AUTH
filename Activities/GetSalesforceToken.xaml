@@ -30,13 +30,15 @@
   <Sequence DisplayName="Get Salesforce Token">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="s:String" Name="PrivateKey" />
-    <Variable x:TypeArguments="s:String" Name="JWT" />
-    <Variable x:TypeArguments="s:String" Name="TokenEndpoint" />
-    <Variable x:TypeArguments="s:String" Name="RequestBody" />
-    <Variable x:TypeArguments="s:String" Name="ResponseBody" />
-    <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
-    <Variable x:TypeArguments="s:Object" Name="TokenResponse" />
+    <Sequence.Variables>
+      <Variable x:TypeArguments="s:String" Name="PrivateKey" />
+      <Variable x:TypeArguments="s:String" Name="JWT" />
+      <Variable x:TypeArguments="s:String" Name="TokenEndpoint" />
+      <Variable x:TypeArguments="s:String" Name="RequestBody" />
+      <Variable x:TypeArguments="s:String" Name="ResponseBody" />
+      <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
+      <Variable x:TypeArguments="s:Object" Name="TokenResponse" />
+    </Sequence.Variables>
     
     <!-- Read Private Key -->
     <ui:ReadTextFile DisplayName="Read Private Key" FileName="[PrivateKeyPath]" Text="[PrivateKey]" />

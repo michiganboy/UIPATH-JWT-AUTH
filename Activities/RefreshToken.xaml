@@ -25,8 +25,10 @@
   <Sequence DisplayName="Refresh Token">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="s:Boolean" Name="TokenNeedsRefresh" />
-    <Variable x:TypeArguments="s:TimeSpan" Name="TimeUntilExpiry" />
+    <Sequence.Variables>
+      <Variable x:TypeArguments="s:Boolean" Name="TokenNeedsRefresh" />
+      <Variable x:TypeArguments="s:TimeSpan" Name="TimeUntilExpiry" />
+    </Sequence.Variables>
     
     <!-- Check if token needs refresh -->
     <Assign DisplayName="Calculate Time Until Expiry">

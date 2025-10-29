@@ -19,8 +19,10 @@
   <Sequence DisplayName="Handle Error">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="s:String" Name="ErrorMessage" />
-    <Variable x:TypeArguments="s:String" Name="ErrorType" />
+    <Sequence.Variables>
+      <Variable x:TypeArguments="s:String" Name="ErrorMessage" />
+      <Variable x:TypeArguments="s:String" Name="ErrorType" />
+    </Sequence.Variables>
     
     <!-- Determine Error Type -->
     <If DisplayName="Check if HTTP Error">

@@ -18,9 +18,11 @@
   <Sequence DisplayName="Validate Token">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="s:String" Name="TestEndpoint" />
-    <Variable x:TypeArguments="s:String" Name="ResponseBody" />
-    <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
+    <Sequence.Variables>
+      <Variable x:TypeArguments="s:String" Name="TestEndpoint" />
+      <Variable x:TypeArguments="s:String" Name="ResponseBody" />
+      <Variable x:TypeArguments="s:Int32" Name="StatusCode" />
+    </Sequence.Variables>
     
     <!-- Set Test Endpoint -->
     <Assign DisplayName="Set Test Endpoint">

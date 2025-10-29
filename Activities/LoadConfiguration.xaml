@@ -24,10 +24,11 @@
   <Sequence DisplayName="Load Configuration">
     
     <!-- Variables -->
-    <Variable x:TypeArguments="s:String" Name="ConfigFilePath" Default="Config/JWT-Config.json" />
-    <Variable x:TypeArguments="s:String" Name="ConfigContent" />
-    <Variable x:TypeArguments="s:Object" Name="ConfigObject" />
-    
+    <Sequence.Variables>
+      <Variable x:TypeArguments="s:String" Name="ConfigFilePath" Default="Config/JWT-Config.json" />
+      <Variable x:TypeArguments="s:String" Name="ConfigContent" />
+      <Variable x:TypeArguments="s:Object" Name="ConfigObject" />
+    </Sequence.Variables>
     <!-- Read Configuration File -->
     <ui:LogMessage DisplayName="Loading Configuration" Level="Info" Message="[&quot;Loading configuration from: &quot; + ConfigFilePath]" />
     
