@@ -6,13 +6,13 @@
   xmlns:s="clr-namespace:System;assembly=mscorlib"
   xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
   xmlns:ui="http://schemas.uipath.com/workflow/activities">
-  <Activity.Arguments>
-    <InArgument x:Key="Exception" x:TypeArguments="s:Exception" />
-    <InArgument x:Key="Context" x:TypeArguments="s:String" />
-    <InArgument x:Key="StatusCode" x:TypeArguments="s:Int32" />
-    <InArgument x:Key="ResponseBody" x:TypeArguments="s:String" />
-    <InArgument x:Key="EnableDetailedLogging" x:TypeArguments="s:Boolean" />
-  </Activity.Arguments>
+  <x:Members>
+    <x:Property Name="Exception" Type="InArgument(x:Exception)" />
+    <x:Property Name="Context" Type="InArgument(x:String)" />
+    <x:Property Name="StatusCode" Type="InArgument(x:Int32)" />
+    <x:Property Name="ResponseBody" Type="InArgument(x:String)" />
+    <x:Property Name="EnableDetailedLogging" Type="InArgument(x:Boolean)" />
+  </x:Members>
 
   <Sequence DisplayName="Handle Error">
     <Sequence.Variables>

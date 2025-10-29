@@ -6,11 +6,11 @@
   xmlns:s="clr-namespace:System;assembly=mscorlib"
   xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
   xmlns:ui="http://schemas.uipath.com/workflow/activities">
-  <Activity.Arguments>
-    <OutArgument x:Key="AccessToken" x:TypeArguments="s:String" />
-    <OutArgument x:Key="InstanceUrl" x:TypeArguments="s:String" />
-    <OutArgument x:Key="TokenExpiry" x:TypeArguments="s:DateTime" />
-  </Activity.Arguments>
+  <x:Members>
+    <x:Property Name="AccessToken" Type="OutArgument(x:String)" />
+    <x:Property Name="InstanceUrl" Type="OutArgument(x:String)" />
+    <x:Property Name="TokenExpiry" Type="OutArgument(x:DateTime)" />
+  </x:Members>
 
   <Sequence DisplayName="Salesforce JWT Authentication">
     <Sequence.Variables>
