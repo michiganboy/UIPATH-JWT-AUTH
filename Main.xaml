@@ -17,22 +17,23 @@
   
   <Sequence DisplayName="Salesforce JWT Authentication">
     <!-- Variables -->
-    <Variable x:TypeArguments="s:String" Name="ClientId" />
-    <Variable x:TypeArguments="s:String" Name="Username" />
-    <Variable x:TypeArguments="s:String" Name="LoginUrl" />
-    <Variable x:TypeArguments="s:String" Name="PrivateKeyPath" />
-    <Variable x:TypeArguments="s:String" Name="TokenEndpoint" />
-    <Variable x:TypeArguments="s:Int32" Name="ExpiryBuffer" />
-    <Variable x:TypeArguments="s:Int32" Name="MaxRetries" />
-    <Variable x:TypeArguments="s:Int32" Name="RetryDelay" />
-    <Variable x:TypeArguments="s:String" Name="LogLevel" />
-    <Variable x:TypeArguments="s:Boolean" Name="EnableDetailedLogging" />
-    <Variable x:TypeArguments="s:String" Name="AccessToken" />
-    <Variable x:TypeArguments="s:String" Name="InstanceUrl" />
-    <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" />
-    <Variable x:TypeArguments="s:Boolean" Name="IsValid" />
-    <Variable x:TypeArguments="s:String" Name="ErrorMessage" />
-    
+    <Sequence.Variables>
+      <Variable x:TypeArguments="s:String" Name="ClientId" />
+      <Variable x:TypeArguments="s:String" Name="Username" />
+      <Variable x:TypeArguments="s:String" Name="LoginUrl" />
+      <Variable x:TypeArguments="s:String" Name="PrivateKeyPath" />
+      <Variable x:TypeArguments="s:String" Name="TokenEndpoint" />
+      <Variable x:TypeArguments="s:Int32" Name="ExpiryBuffer" />
+      <Variable x:TypeArguments="s:Int32" Name="MaxRetries" />
+      <Variable x:TypeArguments="s:Int32" Name="RetryDelay" />
+      <Variable x:TypeArguments="s:String" Name="LogLevel" />
+      <Variable x:TypeArguments="s:Boolean" Name="EnableDetailedLogging" />
+      <Variable x:TypeArguments="s:String" Name="AccessToken" />
+      <Variable x:TypeArguments="s:String" Name="InstanceUrl" />
+      <Variable x:TypeArguments="s:DateTime" Name="TokenExpiry" />
+      <Variable x:TypeArguments="s:Boolean" Name="IsValid" />
+      <Variable x:TypeArguments="s:String" Name="ErrorMessage" />
+    </Sequence.Variables>
     <!-- Load Configuration -->
     <ui:InvokeWorkflowFile DisplayName="Load Configuration" WorkflowFileName="Activities\LoadConfiguration.xaml">
       <ui:InvokeWorkflowFile.Arguments>
