@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Activity x:Class="SalesforceJWT.LoadConfiguration" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
-  <Activity.Arguments>
-    <OutArgument x:TypeArguments="s:String" x:Key="ClientId" />
-    <OutArgument x:TypeArguments="s:String" x:Key="Username" />
-    <OutArgument x:TypeArguments="s:String" x:Key="LoginUrl" />
-    <OutArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath" />
-    <OutArgument x:TypeArguments="s:String" x:Key="TokenEndpoint" />
-    <OutArgument x:TypeArguments="s:Int32" x:Key="ExpiryBuffer" />
-    <OutArgument x:TypeArguments="s:Int32" x:Key="MaxRetries" />
-    <OutArgument x:TypeArguments="s:Int32" x:Key="RetryDelay" />
-    <OutArgument x:TypeArguments="s:String" x:Key="LogLevel" />
-    <OutArgument x:TypeArguments="s:Boolean" x:Key="EnableDetailedLogging" />
-  </Activity.Arguments>
+  <x:Members>
+    <x:Property Name="ClientId" Type="OutArgument(x:String)" />
+    <x:Property Name="Username" Type="OutArgument(x:String)" />
+    <x:Property Name="LoginUrl" Type="OutArgument(x:String)" />
+    <x:Property Name="PrivateKeyPath" Type="OutArgument(x:String)" />
+    <x:Property Name="TokenEndpoint" Type="OutArgument(x:String)" />
+    <x:Property Name="ExpiryBuffer" Type="OutArgument(x:Int32)" />
+    <x:Property Name="MaxRetries" Type="OutArgument(x:Int32)" />
+    <x:Property Name="RetryDelay" Type="OutArgument(x:Int32)" />
+    <x:Property Name="LogLevel" Type="OutArgument(x:String)" />
+    <x:Property Name="EnableDetailedLogging" Type="OutArgument(x:Boolean)" />
+  </x:Members>
   
   <Sequence DisplayName="Load Configuration">
     
