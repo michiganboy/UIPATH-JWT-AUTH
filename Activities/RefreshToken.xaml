@@ -5,11 +5,11 @@
     <x:Property Name="Username" Type="InArgument(x:String)" />
     <x:Property Name="LoginUrl" Type="InArgument(x:String)" />
     <x:Property Name="PrivateKeyPath" Type="InArgument(x:String)" />
-    <x:Property Name="TokenExpiry" Type="InArgument(x:DateTime)" />
+    <x:Property Name="TokenExpiry" Type="InArgument(s:DateTime)" />
     <x:Property Name="IsRefreshed" Type="OutArgument(x:Boolean)" />
     <x:Property Name="NewToken" Type="OutArgument(x:String)" />
     <x:Property Name="NewInstanceUrl" Type="OutArgument(x:String)" />
-    <x:Property Name="NewExpiry" Type="OutArgument(x:DateTime)" />
+    <x:Property Name="NewExpiry" Type="OutArgument(s:DateTime)" />
   </x:Members>
   
   <Sequence DisplayName="Refresh Token">

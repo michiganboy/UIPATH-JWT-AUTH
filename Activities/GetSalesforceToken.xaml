@@ -13,7 +13,7 @@
     <x:Property Name="PrivateKeyPath" Type="InArgument(x:String)" />
     <x:Property Name="AccessToken" Type="OutArgument(x:String)" />
     <x:Property Name="InstanceUrl" Type="OutArgument(x:String)" />
-    <x:Property Name="TokenExpiry" Type="OutArgument(x:DateTime)" />
+    <x:Property Name="TokenExpiry" Type="OutArgument(s:DateTime)" />
   </x:Members>
 
   <Sequence DisplayName="Get Salesforce Token">
