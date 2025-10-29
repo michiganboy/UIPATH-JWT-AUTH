@@ -1,36 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Activity x:Class="SalesforceJWT.RefreshToken"
-  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:s="clr-namespace:System;assembly=mscorlib"
-  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
-  xmlns:ui="http://schemas.uipath.com/workflow/activities">
-
-  <x:Members>
-    <!-- Inputs (same as initial JWT assertion) -->
-    <x:Property Name="ClientId"       Type="InArgument(s:String)" />
-    <x:Property Name="Username"       Type="InArgument(s:String)" />
-    <x:Property Name="LoginUrl"       Type="InArgument(s:String)" />
-    <x:Property Name="PrivateKeyPath" Type="InArgument(s:String)" />
-    <x:Property Name="TokenEndpoint"  Type="InArgument(s:String)" />
-    <x:Property Name="MaxRetries"     Type="InArgument(s:Int32)" />
-    <x:Property Name="RetryDelay"     Type="InArgument(s:Int32)" />
-    <x:Property Name="EnableDetailedLogging" Type="InArgument(s:Boolean)" />
-    <!-- Outputs -->
-    <x:Property Name="AccessToken"    Type="OutArgument(s:String)" />
-    <x:Property Name="InstanceUrl"    Type="OutArgument(s:String)" />
-    <x:Property Name="TokenExpiry"    Type="OutArgument(s:DateTime)" />
-  </x:Members>
+<Activity x:Class="SalesforceJWT.RefreshToken" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib">
+  <Activity.Arguments>
+    <InArgument x:TypeArguments="s:String" x:Key="ClientId" />
+    <InArgument x:TypeArguments="s:String" x:Key="Username" />
+    <InArgument x:TypeArguments="s:String" x:Key="LoginUrl" />
+    <InArgument x:TypeArguments="s:String" x:Key="PrivateKeyPath" />
+    <InArgument x:TypeArguments="s:DateTime" x:Key="TokenExpiry" />
+    <OutArgument x:TypeArguments="s:Boolean" x:Key="IsRefreshed" />
+    <OutArgument x:TypeArguments="s:String" x:Key="NewToken" />
+    <OutArgument x:TypeArguments="s:String" x:Key="NewInstanceUrl" />
+    <OutArgument x:TypeArguments="s:DateTime" x:Key="NewExpiry" />
+  </Activity.Arguments>
   
   <Sequence DisplayName="Refresh Token">
+  <Sequence.Variables>
+
     
     <!-- Variables -->
-    <Sequence.Variables>
-      <Variable x:TypeArguments="s:Boolean" Name="TokenNeedsRefresh" />
-      <Variable x:TypeArguments="s:TimeSpan" Name="TimeUntilExpiry" />
-    </Sequence.Variables>
+    <Variable x:TypeArguments="s:Boolean" Name="TokenNeedsRefresh" />
+    <Variable x:TypeArguments="s:TimeSpan" Name="TimeUntilExpiry" />
     
-    <!-- Check if token needs refresh -->
+      </Sequence.Variables>
+<!-- Check if token needs refresh -->
     <Assign DisplayName="Calculate Time Until Expiry">
       <Assign.To>
         <OutArgument x:TypeArguments="s:TimeSpan">[TimeUntilExpiry]</OutArgument>

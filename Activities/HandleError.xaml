@@ -1,33 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Activity x:Class="SalesforceJWT.HandleError"
+<?xml version="1.0" encoding="UTF-8" ?>
+<Activity
+  x:Class="SalesforceJWT.HandleError"
   xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:s="clr-namespace:System;assembly=mscorlib"
+  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
   xmlns:ui="http://schemas.uipath.com/workflow/activities">
+  <Activity.Arguments>
+    <InArgument x:Key="Exception" x:TypeArguments="s:Exception" />
+    <InArgument x:Key="Context" x:TypeArguments="s:String" />
+    <InArgument x:Key="StatusCode" x:TypeArguments="s:Int32" />
+    <InArgument x:Key="ResponseBody" x:TypeArguments="s:String" />
+    <InArgument x:Key="EnableDetailedLogging" x:TypeArguments="s:Boolean" />
+  </Activity.Arguments>
 
-  <x:Members>
-    <!-- Inputs -->
-    <x:Property Name="Exception"            Type="InArgument(s:Exception)" />
-    <x:Property Name="Context"              Type="InArgument(s:String)" />
-    <x:Property Name="StatusCode"           Type="InArgument(s:Int32)" />
-    <x:Property Name="ResponseBody"         Type="InArgument(s:String)" />
-    <x:Property Name="EnableDetailedLogging" Type="InArgument(s:Boolean)" />
-    <!-- Optional output if you want to bubble up a formatted error -->
-    <x:Property Name="FormattedMessage"     Type="OutArgument(s:String)" />
-  </x:Members>
-  
   <Sequence DisplayName="Handle Error">
-    
-    <!-- Variables -->
     <Sequence.Variables>
-      <Variable x:TypeArguments="s:String" Name="ErrorMessage" />
-      <Variable x:TypeArguments="s:String" Name="ErrorType" />
+      <!--  Variables  -->
+      <Variable Name="ErrorMessage" x:TypeArguments="s:String" />
+      <Variable Name="ErrorType" x:TypeArguments="s:String" />
     </Sequence.Variables>
-    
-    <!-- Determine Error Type -->
+    <!--  Determine Error Type  -->
     <If DisplayName="Check if HTTP Error">
       <If.Condition>
-        <InArgument x:TypeArguments="s:Boolean">[StatusCode > 0]</InArgument>
+        <InArgument x:TypeArguments="s:Boolean">
+          [StatusCode >0]
+        </InArgument>
       </If.Condition>
       <If.Then>
         <Assign DisplayName="Set HTTP Error Type">
@@ -38,14 +36,17 @@
             <InArgument x:TypeArguments="s:String">["HTTP_" + StatusCode.ToString()]</InArgument>
           </Assign.Value>
         </Assign>
-        
-        <!-- Handle specific HTTP status codes -->
+
+        <!--  Handle specific HTTP status codes  -->
         <If DisplayName="Handle 401 Unauthorized">
           <If.Condition>
             <InArgument x:TypeArguments="s:Boolean">[StatusCode = 401]</InArgument>
           </If.Condition>
           <If.Then>
-            <ui:LogMessage DisplayName="401 Unauthorized" Level="Error" Message="[Context + &quot;: 401 Unauthorized - Token may be expired or invalid&quot;]" />
+            <ui:LogMessage
+              DisplayName="401 Unauthorized"
+              Level="Error"
+              Message="[Context + &quot;: 401 Unauthorized - Token may be expired or invalid&quot;]" />
             <Assign DisplayName="Set 401 Error Message">
               <Assign.To>
                 <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -61,7 +62,10 @@
                 <InArgument x:TypeArguments="s:Boolean">[StatusCode = 403]</InArgument>
               </If.Condition>
               <If.Then>
-                <ui:LogMessage DisplayName="403 Forbidden" Level="Error" Message="[Context + &quot;: 403 Forbidden - Insufficient permissions&quot;]" />
+                <ui:LogMessage
+                  DisplayName="403 Forbidden"
+                  Level="Error"
+                  Message="[Context + &quot;: 403 Forbidden - Insufficient permissions&quot;]" />
                 <Assign DisplayName="Set 403 Error Message">
                   <Assign.To>
                     <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -74,10 +78,15 @@
               <If.Else>
                 <If DisplayName="Handle 500 Server Error">
                   <If.Condition>
-                    <InArgument x:TypeArguments="s:Boolean">[StatusCode >= 500]</InArgument>
+                    <InArgument x:TypeArguments="s:Boolean">
+                      [StatusCode >= 500]
+                    </InArgument>
                   </If.Condition>
                   <If.Then>
-                    <ui:LogMessage DisplayName="Server Error" Level="Error" Message="[Context + &quot;: Server error - Status code &quot; + StatusCode.ToString()]" />
+                    <ui:LogMessage
+                      DisplayName="Server Error"
+                      Level="Error"
+                      Message="[Context + &quot;: Server error - Status code &quot; + StatusCode.ToString()]" />
                     <Assign DisplayName="Set Server Error Message">
                       <Assign.To>
                         <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -88,7 +97,10 @@
                     </Assign>
                   </If.Then>
                   <If.Else>
-                    <ui:LogMessage DisplayName="Other HTTP Error" Level="Error" Message="[Context + &quot;: HTTP error - Status code &quot; + StatusCode.ToString()]" />
+                    <ui:LogMessage
+                      DisplayName="Other HTTP Error"
+                      Level="Error"
+                      Message="[Context + &quot;: HTTP error - Status code &quot; + StatusCode.ToString()]" />
                     <Assign DisplayName="Set Other HTTP Error Message">
                       <Assign.To>
                         <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -103,19 +115,22 @@
             </If>
           </If.Else>
         </If>
-        
-        <!-- Log response body if detailed logging is enabled -->
+
+        <!--  Log response body if detailed logging is enabled  -->
         <If DisplayName="Log Response Body">
           <If.Condition>
             <InArgument x:TypeArguments="s:Boolean">[EnableDetailedLogging AndAlso Not String.IsNullOrEmpty(ResponseBody)]</InArgument>
           </If.Condition>
           <If.Then>
-            <ui:LogMessage DisplayName="Response Body" Level="Error" Message="[&quot;Response body: &quot; + ResponseBody]" />
+            <ui:LogMessage
+              DisplayName="Response Body"
+              Level="Error"
+              Message="[&quot;Response body: &quot; + ResponseBody]" />
           </If.Then>
         </If>
       </If.Then>
       <If.Else>
-        <!-- Handle Exception -->
+        <!--  Handle Exception  -->
         <Assign DisplayName="Set Exception Error Type">
           <Assign.To>
             <OutArgument x:TypeArguments="s:String">[ErrorType]</OutArgument>
@@ -124,17 +139,23 @@
             <InArgument x:TypeArguments="s:String">["EXCEPTION"]</InArgument>
           </Assign.Value>
         </Assign>
-        
-        <!-- Log exception -->
-        <ui:LogMessage DisplayName="Exception Occurred" Level="Error" Message="[Context + &quot;: Exception occurred - &quot; + Exception.Message]" />
-        
-        <!-- Handle specific exception types -->
+
+        <!--  Log exception  -->
+        <ui:LogMessage
+          DisplayName="Exception Occurred"
+          Level="Error"
+          Message="[Context + &quot;: Exception occurred - &quot; + Exception.Message]" />
+
+        <!--  Handle specific exception types  -->
         <If DisplayName="Check for Timeout Exception">
           <If.Condition>
             <InArgument x:TypeArguments="s:Boolean">[Exception.Message.ToLower().Contains("timeout")]</InArgument>
           </If.Condition>
           <If.Then>
-            <ui:LogMessage DisplayName="Timeout Exception" Level="Error" Message="[Context + &quot;: Timeout exception detected - network or server issue&quot;]" />
+            <ui:LogMessage
+              DisplayName="Timeout Exception"
+              Level="Error"
+              Message="[Context + &quot;: Timeout exception detected - network or server issue&quot;]" />
             <Assign DisplayName="Set Timeout Error Message">
               <Assign.To>
                 <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -150,7 +171,10 @@
                 <InArgument x:TypeArguments="s:Boolean">[Exception.Message.ToLower().Contains("network") OrElse Exception.Message.ToLower().Contains("connection")]</InArgument>
               </If.Condition>
               <If.Then>
-                <ui:LogMessage DisplayName="Network Exception" Level="Error" Message="[Context + &quot;: Network exception detected - connectivity issue&quot;]" />
+                <ui:LogMessage
+                  DisplayName="Network Exception"
+                  Level="Error"
+                  Message="[Context + &quot;: Network exception detected - connectivity issue&quot;]" />
                 <Assign DisplayName="Set Network Error Message">
                   <Assign.To>
                     <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -166,7 +190,10 @@
                     <InArgument x:TypeArguments="s:Boolean">[Exception.Message.ToLower().Contains("authentication") OrElse Exception.Message.ToLower().Contains("unauthorized")]</InArgument>
                   </If.Condition>
                   <If.Then>
-                    <ui:LogMessage DisplayName="Authentication Exception" Level="Error" Message="[Context + &quot;: Authentication exception detected&quot;]" />
+                    <ui:LogMessage
+                      DisplayName="Authentication Exception"
+                      Level="Error"
+                      Message="[Context + &quot;: Authentication exception detected&quot;]" />
                     <Assign DisplayName="Set Authentication Error Message">
                       <Assign.To>
                         <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -177,7 +204,10 @@
                     </Assign>
                   </If.Then>
                   <If.Else>
-                    <ui:LogMessage DisplayName="General Exception" Level="Error" Message="[Context + &quot;: General exception&quot;]" />
+                    <ui:LogMessage
+                      DisplayName="General Exception"
+                      Level="Error"
+                      Message="[Context + &quot;: General exception&quot;]" />
                     <Assign DisplayName="Set General Error Message">
                       <Assign.To>
                         <OutArgument x:TypeArguments="s:String">[ErrorMessage]</OutArgument>
@@ -192,20 +222,23 @@
             </If>
           </If.Else>
         </If>
-        
-        <!-- Log detailed exception if enabled -->
+
+        <!--  Log detailed exception if enabled  -->
         <If DisplayName="Log Detailed Exception">
           <If.Condition>
             <InArgument x:TypeArguments="s:Boolean">[EnableDetailedLogging]</InArgument>
           </If.Condition>
           <If.Then>
-            <ui:LogMessage DisplayName="Exception Details" Level="Error" Message="[&quot;Exception details: &quot; + Exception.ToString()]" />
+            <ui:LogMessage
+              DisplayName="Exception Details"
+              Level="Error"
+              Message="[&quot;Exception details: &quot; + Exception.ToString()]" />
           </If.Then>
         </If>
       </If.Else>
     </If>
-    
-    <!-- Throw the error -->
+
+    <!--  Throw the error  -->
     <Throw DisplayName="Throw Error">
       <Throw.Exception>
         <InArgument x:TypeArguments="s:Exception">[New Exception(Context + ": " + ErrorMessage, Exception)]</InArgument>
